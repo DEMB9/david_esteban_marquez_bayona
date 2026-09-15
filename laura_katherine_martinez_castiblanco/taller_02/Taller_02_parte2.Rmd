@@ -497,6 +497,206 @@ knitr::kable(
 # Ejercicio 3: (reto integrador, opcional): clientes en riesgo de abandono
 
 
+Este ejercicio combina todo lo visto en la clase: JOINs, subconsultas, CTEs y funciones de ventana en una sola consulta analítica.
+
+## 3.1
+
+Encuentra la fecha de la **última factura** registrada en toda la base de datos (el "presente" del análisis, ya que los datos son históricos).
+
+```{r ejercicio3.1, echo=TRUE}
+# Consulta para obtener la fecha máxima de factura
+query_fecha_maxima <- "
+SELECT MAX(InvoiceDate) AS Fecha_Maxima_Factura
+FROM Invoice;
+"
+
+df_fecha_maxima <- dbGetQuery(con, query_fecha_maxima)
+
+knitr::kable(
+  df_fecha_maxima,
+  caption = "Tabla 1: Fecha máxima de factura en la base de datos",
+  format = "html",
+  table.attr = 'class="table table-striped table-hover table-bordered table-condensed"'
+)
+```
+
+## 3.2
+
+Con una CTE, calcula para cada cliente la fecha de su última compra y el número de meses transcurridos entre esa fecha y la fecha máxima del punto anterior `((JULIANDAY(fecha_maxima) - JULIANDAY(ultima_compra)) / 30)`.
+
+```{r ejercicio3.2, echo=TRUE}
+# CTE para calcular última compra y meses transcurridos
+query_ultima_compra <- "
+WITH Fecha_Maxima AS (
+    SELECT MAX(InvoiceDate) AS fecha_maxima
+    FROM Invoice
+),
+Ultima_Compra_Cliente AS (
+    SELECT 
+        c.CustomerId,
+        c.FirstName || ' ' || c.LastName AS Nombre_Cliente,
+        c.Country,
+        MAX(i.InvoiceDate) AS ultima_compra,
+        ROUND(SUM(i.Total), 2) AS gasto_total_historico,
+        ROUND(
+            (JULIANDAY((SELECT fecha_maxima FROM Fecha_Maxima)) - JULIANDAY(MAX(i.InvoiceDate))) / 30.0, 
+            1
+        ) AS meses_desde_ultima_compra
+    FROM Customer c
+    INNER JOIN Invoice i ON c.CustomerId = i.CustomerId
+    GROUP BY c.CustomerId, c.FirstName, c.LastName, c.Country
+)
+SELECT * FROM Ultima_Compra_Cliente
+ORDER BY meses_desde_ultima_compra DESC;
+"
+
+df_ultima_compra <- dbGetQuery(con, query_ultima_compra)
+
+knitr::kable(
+  head(df_ultima_compra, 15),
+  caption = "Tabla 2: Última compra por cliente y meses transcurridos",
+  format = "html",
+  table.attr = 'class="table table-striped table-hover table-bordered table-condensed"',
+  align = c("l", "l", "l", "c", "c", "c")
+)
+```
+
+## 3.3
+
+Clasifica a cada cliente en una columna `segmento` usando CASE: `'activo'` si compró en los últimos 6 meses respecto al máximo, `'en riesgo'` entre 6 y 12 meses, y `'inactivo'` si lleva más de 12 meses sin comprar.
+
+```{r ejercicio3.3, echo=TRUE}
+# Clasificación de clientes por segmento
+query_segmentacion <- "
+WITH Fecha_Maxima AS (
+    SELECT MAX(InvoiceDate) AS fecha_maxima
+    FROM Invoice
+),
+Cliente_Segmento AS (
+    SELECT 
+        c.CustomerId,
+        c.FirstName || ' ' || c.LastName AS Nombre_Cliente,
+        c.Country,
+        MAX(i.InvoiceDate) AS ultima_compra,
+        ROUND(SUM(i.Total), 2) AS gasto_total_historico,
+        ROUND(
+            (JULIANDAY((SELECT fecha_maxima FROM Fecha_Maxima)) - JULIANDAY(MAX(i.InvoiceDate))) / 30.0, 
+            1
+        ) AS meses_desde_ultima_compra,
+        CASE 
+            WHEN ROUND((JULIANDAY((SELECT fecha_maxima FROM Fecha_Maxima)) - JULIANDAY(MAX(i.InvoiceDate))) / 30.0, 1) <= 6 
+                THEN 'activo'
+            WHEN ROUND((JULIANDAY((SELECT fecha_maxima FROM Fecha_Maxima)) - JULIANDAY(MAX(i.InvoiceDate))) / 30.0, 1) BETWEEN 6 AND 12 
+                THEN 'en riesgo'
+            ELSE 'inactivo'
+        END AS segmento
+    FROM Customer c
+    INNER JOIN Invoice i ON c.CustomerId = i.CustomerId
+    GROUP BY c.CustomerId, c.FirstName, c.LastName, c.Country
+)
+SELECT * FROM Cliente_Segmento
+ORDER BY segmento, meses_desde_ultima_compra DESC;
+"
+
+df_segmentacion <- dbGetQuery(con, query_segmentacion)
+
+knitr::kable(
+  df_segmentacion,
+  caption = "Tabla 3: Clasificación de clientes por segmento de actividad",
+  format = "html",
+  table.attr = 'class="table table-striped table-hover table-bordered table-condensed"',
+  align = c("l", "l", "l", "c", "c", "c", "l")
+)
+```
+
+## 3.4
+
+Para cada `segmento`, calcula el número de clientes, el gasto histórico promedio y el gasto histórico total. Adicionalmente, dentro de cada segmento, usa `RANK()` para identificar a los 3 clientes de mayor gasto histórico (los que más valor perdería la tienda si se van). Interpreta el resultado: ¿qué segmento debería priorizar una campaña de retención?
+
+```{r ejercicio3.4, echo=TRUE}
+# Análisis completo con RANK() por segmento
+query_analisis_completo <- "
+WITH Fecha_Maxima AS (
+    SELECT MAX(InvoiceDate) AS fecha_maxima
+    FROM Invoice
+),
+Cliente_Segmento AS (
+    SELECT 
+        c.CustomerId,
+        c.FirstName || ' ' || c.LastName AS Nombre_Cliente,
+        c.Country,
+        MAX(i.InvoiceDate) AS ultima_compra,
+        ROUND(SUM(i.Total), 2) AS gasto_total_historico,
+        ROUND(
+            (JULIANDAY((SELECT fecha_maxima FROM Fecha_Maxima)) - JULIANDAY(MAX(i.InvoiceDate))) / 30.0, 
+            1
+        ) AS meses_desde_ultima_compra,
+        CASE 
+            WHEN ROUND((JULIANDAY((SELECT fecha_maxima FROM Fecha_Maxima)) - JULIANDAY(MAX(i.InvoiceDate))) / 30.0, 1) <= 6 
+                THEN 'activo'
+            WHEN ROUND((JULIANDAY((SELECT fecha_maxima FROM Fecha_Maxima)) - JULIANDAY(MAX(i.InvoiceDate))) / 30.0, 1) BETWEEN 6 AND 12 
+                THEN 'en riesgo'
+            ELSE 'inactivo'
+        END AS segmento
+    FROM Customer c
+    INNER JOIN Invoice i ON c.CustomerId = i.CustomerId
+    GROUP BY c.CustomerId, c.FirstName, c.LastName, c.Country
+),
+Resumen_Segmento AS (
+    SELECT 
+        segmento,
+        COUNT(*) AS numero_clientes,
+        ROUND(AVG(gasto_total_historico), 2) AS gasto_promedio,
+        ROUND(SUM(gasto_total_historico), 2) AS gasto_total_segmento
+    FROM Cliente_Segmento
+    GROUP BY segmento
+),
+Clientes_Top_por_Segmento AS (
+    SELECT 
+        cs.segmento,
+        cs.Nombre_Cliente,
+        cs.Country,
+        cs.gasto_total_historico,
+        cs.meses_desde_ultima_compra,
+        RANK() OVER (PARTITION BY cs.segmento ORDER BY cs.gasto_total_historico DESC) AS rank_gasto
+    FROM Cliente_Segmento cs
+)
+SELECT 
+    rs.segmento,
+    rs.numero_clientes,
+    rs.gasto_promedio,
+    rs.gasto_total_segmento,
+    cts.Nombre_Cliente AS top_cliente,
+    cts.gasto_total_historico AS gasto_top_cliente,
+    cts.rank_gasto
+FROM Resumen_Segmento rs
+LEFT JOIN Clientes_Top_por_Segmento cts 
+    ON rs.segmento = cts.segmento AND cts.rank_gasto <= 3
+ORDER BY 
+    CASE rs.segmento
+        WHEN 'activo' THEN 1
+        WHEN 'en riesgo' THEN 2
+        WHEN 'inactivo' THEN 3
+    END,
+    cts.rank_gasto;
+"
+
+df_analisis_final <- dbGetQuery(con, query_analisis_completo)
+
+knitr::kable(
+  df_analisis_final,
+  caption = "Tabla 4: Resumen por segmento con top 3 clientes por gasto histórico",
+  format = "html",
+  table.attr = 'class="table table-striped table-hover table-bordered table-condensed"',
+  align = c("l", "c", "c", "c", "l", "c", "c")
+)
+
+```
+
+
+
+
+
 ```{r cerrar_conexion}
 dbDisconnect(con)
 cat("Conexión a la base de datos cerrada correctamente.\n")
