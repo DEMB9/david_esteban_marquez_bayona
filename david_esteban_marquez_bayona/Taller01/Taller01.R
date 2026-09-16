@@ -1,6 +1,13 @@
 # =============================================================================
 # Temperaturas diarias (max/min, °C) - Bogota 2024-2025
 
+
+
+setwd("C:/Users/Estudiante/Downloads/david_esteban_marquez_bayona/david_esteban_marquez_bayona/Taller01")
+
+
+
+
 librerias <- c("httr", "jsonlite", "dplyr", "purrr", "readr", "tibble")
 invisible(lapply(librerias, library, character.only = TRUE))
 
@@ -50,5 +57,6 @@ message(sprintf("Filas: %d | Valores faltantes: %d | Fechas sin cubrir: %d",
 #    write_csv2() usa ";" como separador y "," como decimal (formato que
 #    Excel en configuracion regional es-CO espera por defecto). Si vas a
 #    abrir el archivo en un Excel en ingles, usa write_csv() en su lugar.
+
 readr::write_csv2(dplyr::select(clima_bogota, fecha, high, low),
                   "clima_bogota_2024_2025.csv")
