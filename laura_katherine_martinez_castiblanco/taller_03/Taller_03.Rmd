@@ -1,0 +1,313 @@
+---
+title: "Taller 3 - Tipos de Datos y Estructuras"
+author: "Laura Katherine Martinez Castiblanco"
+output:
+  html_document:
+    theme: flatly
+    toc: false
+    self_contained: true
+    code_folding: hide
+    mathjax: default
+editor_options: 
+  markdown: 
+    wrap: sentence
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  message = FALSE,
+  warning = FALSE
+)
+```
+
+
+```{r librerias y conexion, include=FALSE}
+# Instalamos los paquetes necesarios
+paquetes  <- c("DBI", "RSQLite", "dplyr", "knitr")
+instalados <- rownames(installed.packages())
+pendientes <- setdiff(paquetes, instalados)
+if (length(pendientes) > 0) install.packages(pendientes)
+
+library(DBI)
+library(RSQLite)
+library(dplyr)
+library(knitr)
+library(kableExtra) 
+
+```
+
+
+```{r librerias, include=FALSE}
+# Instalamos y cargamos los paquetes necesarios para el Taller 3
+paquetes  <- c("dplyr", "tibble", "tidyr", "readr", "jsonlite", "xml2", "rvest", "stringr", "janitor", "knitr", "kableExtra")
+instalados <- rownames(installed.packages())
+pendientes <- setdiff(paquetes, instalados)
+if (length(pendientes) > 0) install.packages(pendientes)
+
+library(dplyr)
+library(tibble)
+library(tidyr)
+library(readr)
+library(jsonlite)
+library(xml2)
+library(rvest)
+library(stringr)
+library(janitor)
+library(knitr)
+library(kableExtra)
+```
+
+# Ejercicio 1: Clasificación de tipos de datos 
+
+Para cada fuente de datos, indique: (a) si es estructurada, semi-estructurada o no estructurada; (b) la razón; (c) el paso de preprocesamiento mínimo para convertirla en un tibble analizable.
+
+```{r tabla_sintesis_ejercicio1, eval=FALSE, include=FALSE, results='asis'}
+# Construcción del dataframe sintético con la clasificación de las 5 fuentes
+tabla_e1 <- tibble(
+  Fuente = c(
+    "1. Microdatos GEIH del DANE (.csv)",
+    "2. API JSON datos.gov.co (Calidad del aire)",
+    "3. Audio de audiencias judiciales (.mp3/.wav)",
+    "4. Factura electrónica DIAN (.xml)",
+    "5. Tabla HTML de Wikipedia (Scraping)"
+  ),
+  Tipo_Dato = c(
+    "Estructurado",
+    "Semi-estructurado",
+    "No estructurado",
+    "Semi-estructurado",
+    "Semi-estructurado"
+  ),
+  Razon_Teorica = c(
+    "Esquema rígido en filas y columnas con tipos de datos fijos predefinidos.",
+    "Formato auto-descriptivo clave-valor con listas/arreglos anidados.",
+    "Serie temporal continua de ondas sonoras sin atributos ni campos tabulares.",
+    "Documento jerárquico basado en un árbol de etiquetas XML / UBL.",
+    "Estructura tabular delimitada por marcado HTML (<table>, <tr>, <td>)."
+  ),
+  Preprocesamiento_Minimo = c(
+    "readr::read_csv() con tipos de columna explícitos y manejo de NAs.",
+    "jsonlite::fromJSON() + tidyr::hoist() / unnest_wider() para aplanar listas.",
+    "ASR (Speech-to-Text) a texto -> Tokenización/TF-IDF O extracción de MFCC.",
+    "xml2::read_xml() + XPath para extraer nodos -> purrr/map_dfr() a tibble.",
+    "rvest::read_html() + html_element('table') %>% html_table() + clean_names()."
+  )
+)
+
+# Renderizado de la tabla interactiva HTML
+kable(
+  tabla_e1, 
+  format = "html",
+  caption = "Tabla 1.1: Clasificación taxonómica y flujo de preprocesamiento mínimo por fuente de datos",
+  col.names = c("Fuente de Datos", "Tipo de Dato", "Justificación", "Preprocesamiento Mínimo en R"),
+  table.attr = 'class="table table-striped table-hover table-bordered table-condensed"'
+) %>%
+  kable_styling(full_width = TRUE, bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+
+### 1. Microdatos GEIH del DANE (Archivo `.csv` de 300.000 filas)
+
+* **(a) Clasificación:** **Estructurado**.
+* **(b) Razón:** Posee un esquema explícito rígido predefinido donde cada columna representa una variable con tipo de dato fijo (entero, numérico, carácter) y cada fila corresponde a una observación (hogar/persona). No requiere parsing de árbol ni inferencia de etiquetas en memoria.
+* **(c) Paso de preprocesamiento mínimo:**
+  1. Lectura directa mediante `readr::read_csv()` por su eficiencia computacional en archivos de gran tamaño (300k+ filas).
+  2. Especificación explícita de tipos de columna (`col_types`) y codificación de caracteres (`locale = locale(encoding = "Latin1")`).
+  3. Estandarización de nombres con `janitor::clean_names()` y tratamiento de valores faltantes (`NA`).
+
+```{r e1_demostracion_geih, eval=FALSE, echo=TRUE}
+# Ejemplo
+geih_raw <- readr::read_csv(
+  file = "geih_microdatos.csv",
+  locale = readr::locale(encoding = "Latin1"),
+  show_col_types = FALSE
+) %>%
+  janitor::clean_names()
+```
+
+---
+
+### 2. Respuesta JSON de la API pública datos.gov.co (Calidad del aire)
+
+* **(a) Clasificación:** **Semi-estructurado**.
+* **(b) Razón:** No sigue un esquema relacional estricto, sino una auto-descripción jerárquica mediante pares clave-valor (`key-value`). Aunque `jsonlite::fromJSON()` convierte arreglos simples automáticamente, los campos anidados (como coordenadas o listas de sensores) impiden que sea una matriz o tabla plana bidimensional inmediata.
+* **(c) Paso de preprocesamiento mínimo:**
+  1. Consumo del endpoint o archivo local con `jsonlite::fromJSON()`.
+  2. Aplanamiento jerárquico (*flattening*) y desanidado de listas mediante `tidyr::hoist()` o `tidyr::unnest_wider()` para extraer las métricas (PM2.5, PM10) a vectores numéricos en columnas.
+  3. Conversión de las marcas de tiempo a objetos `POSIXct` de fecha/hora.
+
+```{r e1_demostracion_json, eval=FALSE, echo=TRUE}
+# Ejemplo
+json_raw <- jsonlite::fromJSON("https://datos.gov.co/resource/calidad_aire.json")
+json_tbl <- as_tibble(json_raw) %>%
+  tidyr::hoist(ubicacion, latitud = "lat", longitud = "lng") %>%
+  dplyr::mutate(concentracion_pm25 = as.numeric(concentracion_pm25))
+```
+
+---
+
+### 3. Grabaciones de audio de audiencias judiciales de la Rama Judicial
+
+* **(a) Clasificación:** **No estructurado**.
+* **(b) Razón:** Es una señal física/acústica continua representada como una secuencia temporal de amplitudes sonoras sin campos, columnas o etiquetas semánticas predefinidas. Un algoritmo de minería tradicional (ej. árboles de decisión o regresión) no puede operar directamente sobre el archivo binario sin una transformación representacional.
+* **(c) Paso de preprocesamiento mínimo (Dos enfoques según el objetivo de KDD):**
+  * **Opción A (Minería de Texto / NLP):** Transcripción automática mediante un modelo ASR (*Automatic Speech Recognition* como OpenAI Whisper), seguido de limpieza de texto, remoción de *stop words*, tokenización y vectorización en una matriz de términos-documentos (TF-IDF o *embeddings*).
+  * **Opción B (Procesamiento de Señal Acústica):** Ventaneo del audio y extracción de características espectrales numéricas (Coeficientes Cepstrales en las Frecuencias de Mel - MFCC, tono, energía) agrupadas en un `tibble` o matriz bidimensional \\(X \in \mathbb{R}^{n \times p}\\).
+
+---
+
+### 4. Factura electrónica emitida por la DIAN (Formato XML)
+
+* **(a) Clasificación:** **Semi-estructurado**.
+* **(b) Razón:** Está estructurado jerárquicamente en forma de árbol (*XML Schema* / UBL) utilizando etiquetas delimitadoras (`<Invoice>`, `<LegalMonetaryTotal>`, `<InvoiceLine>`). Posee léxico estructural estandarizado, pero no es una tabla rectangular bidimensional directa.
+* **(c) Paso de preprocesamiento mínimo:**
+  1. Lectura del documento XML con `xml2::read_xml()`.
+  2. Extracción de nodos clave con expresiones XPath (`xml2::xml_find_all()`, `xml2::xml_text()`).
+  3. Mapeo estructurado con `purrr::map_dfr()` o `dplyr::bind_rows()` para definir la granularidad deseada (ej. 1 fila por factura o 1 fila por ítem/producto facturado).
+
+```{r e1_demostracion_xml, eval=FALSE, echo=TRUE}
+# Ejemplo
+xml_doc <- xml2::read_xml("factura_dian.xml")
+items_nodos <- xml2::xml_find_all(xml_doc, "//cac:InvoiceLine")
+
+factura_items <- tibble::tibble(
+  item_id     = xml2::xml_text(xml2::xml_find_first(items_nodos, ".//cbc:ID")),
+  descripcion = xml2::xml_text(xml2::xml_find_first(items_nodos, ".//cbc:Description")),
+  precio      = as.numeric(xml2::xml_text(xml2::xml_find_first(items_nodos, ".//cbc:PriceAmount")))
+)
+```
+
+---
+
+### 5. Tabla HTML de Wikipedia scrapeada con `rvest`
+
+* **(a) Clasificación:** **Semi-estructurado**.
+* **(b) Razón:** Se encuentra delimitada visualmente por el marcado HTML (`<table>`, `<tr>`, `<td>`), pero está embebida en el DOM de una página web, mezclada con código de maquetación, hipervínculos, estilos y cadenas de texto que contienen símbolos o referencias a pie de página (``, `[nota]`).
+* **(c) Paso de preprocesamiento mínimo:**
+  1. Descarga y parseo del documento con `rvest::read_html()`.
+  2. Selección del nodo con `rvest::html_element("table")` y extracción nativa con `rvest::html_table()`.
+  3. Limpieza de nombres de columna con `janitor::clean_names()` y remoción de caracteres de ruido mediante expresiones regulares (`stringr::str_replace_all()`, `str_squish()`) para convertir texto a vectores numéricos reales.
+
+```{r e1_demostracion_html, eval=FALSE, echo=TRUE}
+# Ejemplo
+tabla_wiki <- rvest::read_html("https://es.wikipedia.org/wiki/Ejemplo") %>%
+  rvest::html_element("table.wikitable") %>%
+  rvest::html_table() %>%
+  janitor::clean_names() %>%
+  dplyr::mutate(
+    poblacion = stringr::str_replace_all(poblacion, "\\[.*\\]|,", "") %>% as.numeric()
+  )
+```
+
+
+# Ejercicio 2: JSON anidado a DataFrame
+
+Descargue el siguiente JSON público con datos de usuarios (incluye campos anidados `address` y `company`):
+
+```{r e2_descarga, echo=TRUE}
+library(jsonlite)
+library(dplyr)
+library(tibble)
+library(tidyr)
+library(knitr)
+library(kableExtra)
+
+url <- "https://jsonplaceholder.typicode.com/users"
+raw <- fromJSON(url)
+```
+
+---
+
+### 1. Explore la estructura con `str(raw)`. ¿Qué columnas son listas anidadas?
+
+Inspeccionamos la jerarquía del objeto capturado desde la API web mediante `str()`:
+
+```{r e2_exploracion, echo=TRUE}
+# Inspección de la estructura interna del objeto raw
+str(raw, max.level = 3)
+```
+
+Al ejecutar `str(raw)`, se evidencia que `fromJSON()` convierte la respuesta JSON en un `data.frame` base de 10 observaciones y 8 variables principales. Sin embargo, no todas las variables son vectores atómicos simples (`int` o `chr`):
+
+* **`address`**: Es una columna que contiene un `data.frame` embebido de 10 filas y 5 variables (`street`, `suite`, `city`, `zipcode`, `geo`).
+* **`address$geo`**: Es una sub-estructura anidada dentro de `address`, que a su vez es otro `data.frame` embebido de 2 variables (`lat` y `lng`).
+* **`company`**: Es un `data.frame` embebido de 10 filas y 3 variables (`name`, `catchPhrase`, `bs`).
+
+Por lo tanto, las columnas **`address`** (junto con su sub-campo **`geo`**) y **`company`** corresponden a estructuras/listas anidadas en el dataframe base.
+
+---
+
+### 2. Aplane el objeto a un `tibble` con una fila por usuario, extrayendo al menos: `name`, `email`, `address.city`, `address.geo.lat`, `address.geo.lng` y `company.name`.
+
+Para la transformación de esta fuente semi-estructurada a una estructura analítica tabular plana, implementamos y comparamos dos soluciones modulares en R:
+
+#### Método 1: Aplanamiento directo con `jsonlite::flatten()` (más eficiente)
+
+La función `jsonlite::flatten()` colapsa recursivamente los `data.frame` anidados dentro de las columnas principales, concatenando los nombres con punto (`.`).
+
+```{r e2_aplanamiento_flatten, echo=TRUE}
+# 1. Aplanamiento recursivo de data.frames anidados
+raw_flat <- jsonlite::flatten(raw)
+
+# 2. Conversión a tibble y selección de columnas requeridas por el taller
+usuarios_tbl <- as_tibble(raw_flat) %>%
+  select(
+    name,
+    email,
+    address.city,
+    address.geo.lat  = address.geo.lat,
+    address.geo.lng  = address.geo.lng,
+    company.name     = company.name
+  )
+
+# Renderizado de la tabla resultante con kableExtra
+kable(
+  usuarios_tbl,
+  format = "html",
+  caption = "Tabla 2.1: Dataset plano de usuarios aplanado desde JSON",
+  col.names = c("Nombre (name)", "Email (email)", "Ciudad (address.city)", "Latitud (address.geo.lat)", "Longitud (address.geo.lng)", "Empresa (company.name)"),
+  table.attr = 'class="table table-striped table-hover table-bordered table-condensed"'
+) %>%
+  kable_styling(full_width = TRUE, bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+#### Método 2: Desempaquetado explícito con `tidyr::unpack()` (Enfoque Tidyverse)
+
+También podemos aplicar `tidyr::unpack()` paso a paso para desanidar los bloques jerárquicos:
+
+```{r e2_aplanamiento_tidyverse, echo=TRUE}
+# Alternativa usando el flujo tidyverse con unpack()
+usuarios_tbl_tidy <- as_tibble(raw) %>%
+  unpack(address, names_sep = ".") %>%
+  unpack(address.geo, names_sep = ".") %>%
+  unpack(company, names_sep = ".") %>%
+  select(
+    name,
+    email,
+    address.city,
+    address.geo.lat,
+    address.geo.lng,
+    company.name
+  )
+
+# Verificación de equivalencia entre ambos métodos
+identical(usuarios_tbl, usuarios_tbl_tidy)
+```
+
+
+Ambos métodos llevan al mismo `tibble` plano con 10 filas (usuarios) y 6 columnas.
+
+---
+
+### 3. ¿Qué tipo de dato es esta fuente? ¿Por qué `fromJSON` no produce directamente un `tibble` plano?
+
+* **¿Qué tipo de dato es esta fuente?**
+  Es un tipo de dato **semi-estructurado**. Posee una organización propia basada en etiquetas auto-descriptivas y pares clave-valor (`key-value`), pero carece de un esquema relacional estricto o de una disposición matricial bidimensional rígida inmediata.
+
+* **¿Por qué `fromJSON` no produce directamente un `tibble` plano?**
+  1. **Naturaleza Árbol del Formato JSON:** Los archivos JSON representan relaciones jerárquicas complejas donde un nodo (ej. `address`) puede contener múltiples sub-nodos u objetos anidados.
+  2. **Preservación del Modelo de Datos por `jsonlite`:** Para no asumir decisiones arbitrarias de nombrado o perder la semántica de la jerarquía original, `jsonlite::fromJSON()` simplifica vectores idénticos convirtiéndolos en `data.frames` embebidos dentro del dataframe padre.
+  3. **Exigencia de la Fase de Preprocesamiento KDD:** En el ciclo de vida KDD, R delega en el analista la responsabilidad de definir la granularidad deseada mediante técnicas de aplanamiento (*flattening* o *un-nesting*). Esto garantiza la correcta creación de la matriz de características rectangular requerida por los algoritmos de clasificación, clustering o regresión.
+
+
