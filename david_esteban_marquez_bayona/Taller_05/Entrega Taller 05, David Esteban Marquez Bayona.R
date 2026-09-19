@@ -68,9 +68,6 @@ colnames(titanic) <- tolower(colnames(titanic))
 #        limpieza: nombres de columnas (janitor::clean_names()), quitar notas
 #        al pie como [1] y separadores de miles, convertir a numérico y
 #        resolver celdas combinadas (rowspan/colspan).
-#
-# Idea clave: cuanto menos estructurada es la fuente, más largo es el camino
-# hasta la matriz numérica que consume un algoritmo.
 
 
 # =============================================================================
