@@ -360,6 +360,7 @@ g_scree <- ggplot(var_expl, aes(componente, acumulada)) +
   theme_minimal(base_size = 12)
 
 print(g_scree)
+
 # --- 5.3 Loadings de PC1 y PC2 ------------------------------------------------
 loadings <- pca$rotation[, 1:2] |>
   as.data.frame() |>
