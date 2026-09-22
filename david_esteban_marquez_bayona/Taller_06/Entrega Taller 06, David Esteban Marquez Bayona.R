@@ -29,7 +29,7 @@ moda <- function(x) {
 }
 
 
-# Ejercicio 1
+#### Ejercicio 1 #################
 
 # 1.a
 resumen_na_precios <- precios |>
@@ -245,7 +245,7 @@ precios_edad |>
   arrange(grupo_ntile)
 
 
-# Ejercicio 2
+########## Ejercicio 2 ##############
 
 # 2.a
 titanic_out <- titanic |>
@@ -385,7 +385,7 @@ titanic_out |>
   summarise(correlacion_rangos = cor(fare, fare_log, method = "spearman"))
 
 
-# Ejercicio 3
+########## Ejercicio 3 ##############
 
 extraer_titulo <- function(nombre) {
   titulo <- str_extract(nombre, "(?<=, )[A-Za-z]+(?=\\.)")
@@ -523,7 +523,7 @@ bind_rows(
   theme_minimal(base_size = 12)
 
 
-# Ejercicio 4
+########### Ejercicio 4 ###############
 
 cols_mov <- c("ram", "battery_power", "int_memory", "px_height", "px_width")
 
@@ -648,7 +648,7 @@ param_minmax |>
   filter(minimo != minimo_total | maximo != maximo_total)
 
 
-# Ejercicio 5
+################## Ejercicio 5 #################
 
 # 5.a
 adult_na <- adult |>
