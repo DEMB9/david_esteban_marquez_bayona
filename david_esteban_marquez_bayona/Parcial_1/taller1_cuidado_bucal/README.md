@@ -76,9 +76,11 @@ python scraper.py --robots                     # revisa y guarda robots.txt (cad
 ## Prueba en otro entorno (Google Colab)
 
 ```python
-!git clone <url del repositorio> && cd <carpeta del estudiante>
-%cd <carpeta del estudiante>
-!pip install -r requirements.txt
+%cd /content
+!rm -rf david_esteban_marquez_bayona
+!git clone --depth 1 https://github.com/DEMB9/david_esteban_marquez_bayona
+%cd /content/david_esteban_marquez_bayona/david_esteban_marquez_bayona/Parcial_1/taller1_cuidado_bucal
+!pip install -q -r requirements.txt
 !python scraper.py --probar              # recolección completa en una carpeta temporal (no toca la base ni raw/)
 ```
 
