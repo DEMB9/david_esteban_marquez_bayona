@@ -1,18 +1,22 @@
 ---
-title: "Actividad Clase 13: Regresión lineal, múltiple y logística"
-subtitle: "Minería de Datos · Departamento de Estadística, Universidad Nacional de Colombia, Sede Bogotá"
+title: 'Actividad Clase 13: Regresión lineal, múltiple y logística'
 author: "David Márquez"
 date: "19 de octubre de 2026"
 output:
+  pdf_document:
+    toc: true
+    latex_engine: xelatex
+  github_document:
+    toc: true
+    html_preview: false
   html_document:
     toc: true
     toc_float: true
     theme: flatly
     highlight: tango
     code_folding: show
-  github_document:
-    toc: true
-    html_preview: false
+subtitle: Minería de Datos · Departamento de Estadística, Universidad Nacional de
+  Colombia, Sede Bogotá
 ---
 
 ```{r setup, include=FALSE}
@@ -268,7 +272,7 @@ summary(mod4)
 ```{r ej4-or}
 ic_or <- exp(confint(mod4))
 tab4 <- data.frame(
-  `β (logit)`  = coef(mod4),
+  `B (logit)`  = coef(mod4),
   OR           = exp(coef(mod4)),
   `IC 2.5%`    = ic_or[, 1],
   `IC 97.5%`   = ic_or[, 2],
@@ -335,7 +339,7 @@ ci_auc <- ci.auc(roc4)
 - **Odds ratio del precio = `r f(or_pr$OR, 3)`.** Manteniendo constante la publicidad, cada unidad adicional de precio multiplica los odds de aplicar una promoción por `r f(or_pr$OR, 3)`, es decir, los **reduce en un `r pct(1 - or_pr$OR, 0)`**. En la escala de probabilidad equivale a unos `r f(abs(100 * efecto_marginal["precio"]), 1)` puntos porcentuales menos de probabilidad de promoción por unidad de precio (efecto marginal promedio).
 - **Pero el efecto no es estadísticamente significativo.** El IC 95% del OR va de `r f(or_pr[["IC 2.5%"]], 3)` a `r f(or_pr[["IC 97.5%"]], 3)` e **incluye el 1**, y p `r fp(or_pr[["Valor p"]])`. Los datos no permiten afirmar que el precio cambie la probabilidad de aplicar una promoción: el signo negativo bien puede deberse al azar.
 - **Publicidad:** OR = `r f(or_pub$OR, 3)` (IC 95%: `r f(or_pub[["IC 2.5%"]], 3)` a `r f(or_pub[["IC 97.5%"]], 3)`, p `r fp(or_pub[["Valor p"]])`). Tampoco tiene un efecto apreciable.
-- **Modelo en conjunto:** la prueba de razón de verosimilitudes contra el modelo nulo no es significativa (χ² = `r f(lr4$Deviance[2])`, 2 gl, p `r fp(lr4[2, "Pr(>Chi)"])`), y el AUC = `r f(auc4, 3)` (IC 95%: `r f(ci_auc[1], 3)` a `r f(ci_auc[3], 3)`) no se distingue de 0.5, que es la discriminación de una moneda al aire.
+- **Modelo en conjunto:** la prueba de razón de verosimilitudes contra el modelo nulo no es significativa (X2 = `r f(lr4$Deviance[2])`, 2 gl, p `r fp(lr4[2, "Pr(>Chi)"])`), y el AUC = `r f(auc4, 3)` (IC 95%: `r f(ci_auc[1], 3)` a `r f(ci_auc[3], 3)`) no se distingue de 0.5, que es la discriminación de una moneda al aire.
 
 **Conclusión:** ni el precio ni la publicidad permiten anticipar si se aplica una promoción. El resultado es coherente con cómo se generaron los datos: `promo` se asignó con `sample()`, independiente de las demás variables. Además, aunque hubiera asociación, el modelo solo mediría eso; la dirección causal (si el precio lleva a promocionar o si la promoción se refleja en el precio) no se puede establecer con estos datos.
 
