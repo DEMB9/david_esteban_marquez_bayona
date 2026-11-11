@@ -5,6 +5,7 @@ Minería de Datos (2016325) · Universidad Nacional de Colombia · **David Esteb
 - **Aplicación publicada:** https://9foq8d-david-esteban.shinyapps.io/Parcial_2/
 - **Categoría:** cuidado bucal. **Comercios:** Éxito, Olímpica y Locatel (los mismos del Taller 1).
 - **Lenguaje:** R ≥ 4.2 para todo el proceso (scraping, acceso a datos, aplicación y pruebas).
+- **Novedad Éxito:** Durante la realización de nuevos scraping para tener mayor información la pagina siempre rechazo las solicitudes del script. Por ello, no hay nuevos registros solo los dos reglamentarios.
 
 > **Cambio de lenguaje.** El Taller 1 se entregó en Python. Como la aplicación es Shiny, el enunciado
 > exige reescribir la extracción en R: `scraper.R` y `limpieza.R` son la versión en R de `scraper.py` y
