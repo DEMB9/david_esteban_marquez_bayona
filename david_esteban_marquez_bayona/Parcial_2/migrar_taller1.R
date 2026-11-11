@@ -1,6 +1,6 @@
 # migrar_taller1.R — Prepara la base del Taller 2 a partir de la entrega del Taller 1.
 #
-# Uso (desde taller_2/):  Rscript migrar_taller1.R [carpeta_del_taller_1]
+# Uso (desde la carpeta del proyecto):  Rscript migrar_taller1.R [carpeta_del_taller_1]
 # Por defecto busca ../Parcial_1/taller1_cuidado_bucal. Es idempotente:
 #   1. copia comparador_precios.sqlite, raw/ y correspondencias_manuales.csv si aún no están aquí;
 #   2. agrega tablas, columnas, índices y vistas del Taller 2 (no borra ni modifica observaciones);

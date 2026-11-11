@@ -2,8 +2,8 @@
 #
 # Uso (una sola vez, en una sesión de R recién iniciada):
 #   1. En RStudio: Session > Restart R (Ctrl + Shift + F10).
-#   2. Ubicarse en la carpeta taller_2 y ejecutar:   source("configurar.R")
-#      o desde la terminal, dentro de taller_2:      Rscript configurar.R
+#   2. Ubicarse en la carpeta del proyecto y ejecutar:   source("configurar.R")
+#      o desde la terminal, en esa carpeta:           Rscript configurar.R
 #
 # Qué hace:
 #   1. Revisa la versión de R y que no haya paquetes ya cargados que impidan instalar.
@@ -17,7 +17,7 @@ local({
   linea <- function() message(strrep("-", 70))
 
   if (!file.exists("renv.lock")) {
-    stop("No se encontró renv.lock. Ejecute este script desde la carpeta taller_2 (use setwd).", call. = FALSE)
+    stop("No se encontró renv.lock. Ejecute este script desde la carpeta del proyecto.", call. = FALSE)
   }
 
   # Paquetes que usa directamente el proyecto (el resto son dependencias de estos)

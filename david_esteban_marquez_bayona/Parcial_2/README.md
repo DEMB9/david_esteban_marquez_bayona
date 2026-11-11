@@ -16,7 +16,7 @@ Minería de Datos (2016325) · Universidad Nacional de Colombia · **David Esteb
 ## 1. Ejecutar la aplicación localmente
 
 ```r
-# desde la carpeta taller_2/, en una sesión de R recién iniciada
+# desde esta carpeta, en una sesión de R recién iniciada
 source("configurar.R")        # una sola vez: instala las versiones fijadas en renv.lock y las verifica
 # reiniciar R (Ctrl + Shift + F10)
 shiny::runApp()               # abre la aplicación
@@ -71,19 +71,28 @@ empates, canasta completa y canasta con un producto faltante, y filtros con text
 (`ejecuciones.carpeta_raw`). La columna «Coinciden con la base» del resumen del modo sin conexión cuenta
 cuántas filas leídas de `raw/` coinciden en SKU, precio y disponibilidad con lo guardado.
 
-**Historial.** `PENDIENTE — la base del Taller 1 tiene 8 ejecuciones completas, todas del 2026-10-09. Falta
-agregar al menos una ejecución en otra fecha con «Actualizar precios» (o `Rscript scraper.R`) y describirla aquí.`
+**Historial.** La base tiene 10 ejecuciones completas en dos fechas distintas y 23.860 observaciones:
+
+| Fecha | Ejecuciones | Observaciones por ejecución |
+|---|---|---|
+| 2026-10-09 | 9: las 8 del Taller 1 (`E20261009T104100` a `E20261009T144022`) y `E20261009T162803` | 2.383 a 2.384 |
+| 2026-11-09 | 1: `E20261109T151124` (la nueva de este taller) | 2.409 (Éxito 1.757, Locatel 374, Olímpica 278) |
+
+Las ejecuciones `E20261009T162803` y `E20261109T151124` se cargaron a la base desde sus copias crudas con el modo
+sin conexión, por eso figuran con `modo_carga = sin_conexion`; la fecha y hora de cada consulta al sitio es la
+que quedó en su `manifest.json`. El 2026-11-11 se intentó otra ejecución, pero Éxito respondió HTTP 403 y no se
+agregó a esta base.
 
 **Correcciones a la base del Taller 1** (tabla `correcciones`; no se borró ni se modificó ninguna observación):
 
 | Regla | Qué corrige | Registros |
 |---|---|---|
-| C1 | Contenido homologado por EAN: anuncios del mismo código de barras que declaraban contenidos distintos (por ejemplo, Locatel tomaba el peso de la ficha técnica de un cepillo, «47 g», en vez de «2 unidades»; Éxito publica 75 mL donde los otros dos publican 100 g). Se usa el contenido de la mayoría estricta; si no hay mayoría la presentación queda **sin precio unitario**. | 53 anuncios |
+| C1 | Contenido homologado por EAN: anuncios del mismo código de barras que declaraban contenidos distintos (por ejemplo, Locatel tomaba el peso de la ficha técnica de un cepillo, «47 g», en vez de «2 unidades»; Éxito publica 75 mL donde los otros dos publican 100 g). Se usa el contenido de la mayoría estricta; si no hay mayoría la presentación queda **sin precio unitario**. | 56 anuncios (4 campos cada uno: 224 registros) |
 | C2 | Subcategoría homologada por EAN con la misma regla (por ejemplo, nombres abreviados de Olímpica que quedaban en «Otros cuidado bucal»). | 10 anuncios |
 
-Con esto, 78 de las 84 presentaciones comparables tienen contenido verificado y, por tanto, precio unitario comparable; antes de las correcciones eran menos de la mitad.
-`PENDIENTE — agregar las correcciones que pida la retroalimentación del Taller 1 con registrar_correccion()
-o descartar_observacion() (validacion.R) y describirlas aquí.`
+Con esto, 76 de las 82 presentaciones comparables tienen contenido verificado y, por tanto, precio unitario comparable; antes de las correcciones eran menos de la mitad.
+No hay correcciones manuales ni observaciones descartadas: si se necesitan, se registran con `registrar_correccion()`
+o `descartar_observacion()` (`validacion.R`) y quedan en la misma tabla.
 
 **Validación** (`validacion.R`): precio numérico (V1) y mayor que cero (V2); producto disponible con precio
 (V3); comercio, URL, SKU y fecha presentes (V4); fecha en ISO 8601 (V5); sin duplicados en la ejecución (V6);
@@ -97,7 +106,8 @@ ejecución, y no se interpreta como agotado ni como retirado.
 
 **Los ocho productos comparables de referencia** (tabla `comparables_referencia`): presentaciones emparejadas
 por EAN, sin alertas ni correcciones, con contenido verificado y precio en los tres comercios en todas las
-ejecuciones completas. La aplicación trabaja además con las 84 presentaciones comparables del Taller 1.
+ejecuciones completas. La aplicación trabaja además con las 82 presentaciones comparables: las que tienen precio
+disponible en los tres comercios en la ejecución de referencia (`E20261109T151124`).
 
 ### Vistas SQL que usa la aplicación
 
@@ -155,24 +165,32 @@ sola conexión de lectura (`PRAGMA query_only`) y la cierra con `onStop()`; el s
 
 ## 7. Hallazgos para el consumidor
 
-Basados en las 8 ejecuciones del **9 de octubre de 2026** (10:41 a 14:42); las cifras son de la ejecución
-`E20261009T144022` y se pueden verificar en la aplicación eligiéndola en «Ejecución».
-`PENDIENTE — actualizar con la ejecución nueva de este taller.`
+Basados en las 10 ejecuciones de la base (2026-10-09 y 2026-11-09). Las cifras son de la ejecución más reciente,
+`E20261109T151124` (9 de noviembre de 2026, 15:11), que es la que la aplicación muestra por defecto; las de
+octubre son de `E20261009T144022` y se verifican eligiéndola en «Ejecución».
 
-1. **Éxito es el más barato en la mayoría de productos, pero no en todos.** De las 84 presentaciones
-   comparables, Éxito tiene el menor precio en 53, Olímpica en 22 y Locatel en 13 (los empates cuentan para
-   cada comercio). Se ve en «Comparar precios» (colores del gráfico de ahorro).
-2. **La mejor tienda depende de la canasta.** Con los ocho productos de referencia, una unidad de cada uno, la
-   canasta cuesta $ 150.625 en Olímpica, $ 151.605 en Éxito y $ 167.775 en Locatel; comprando cada producto
-   donde es más barato cuesta $ 140.485: $ 10.140 menos (6,7 %) que en el mejor comercio único. Se ve en «Canasta».
-3. **El tamaño grande rinde más.** Listerine Cool Mint cuesta en Éxito $ 59,1 por mL en 180 mL, $ 39,9 en
-   500 mL y $ 32,2 en 1.000 mL; el orden se repite en Olímpica y Locatel. Se ve en «Precio por unidad de contenido».
-4. **El catálogo más grande no es el más disponible.** Éxito publica 1.733 anuncios, pero el 63,8 % figura
-   agotado y sin precio; en Locatel es el 8,2 % y en Olímpica ninguno. De los anuncios con precio, está en
-   promoción el 72,6 % en Éxito, el 15,6 % en Locatel y el 6,6 % en Olímpica. Se ve en «Resumen» filtrando por comercio.
+1. **El comercio más barato cambió de un mes a otro.** En noviembre, de las 82 presentaciones comparables,
+   Olímpica tiene el menor precio en 34, Éxito en 31 y Locatel en 13, y en 4 hay empate. En octubre Éxito
+   ganaba en 48, Olímpica en 19 y Locatel en 11 (4 empates). Se ve en «Comercios» (¿Quién es más barato?) y
+   en los colores del gráfico de ahorro de «Comparar precios».
+2. **La mejor tienda depende de la canasta, y combinar tiendas ahorra poco.** Con los ocho productos de
+   referencia, una unidad de cada uno, la canasta cuesta $ 149.025 en Olímpica, $ 167.850 en Éxito y $ 183.100 en
+   Locatel; comprando cada producto donde es más barato cuesta $ 146.935: $ 2.090 menos (1,4 %) que en el mejor
+   comercio único. En octubre la diferencia era de $ 10.140 (6,7 %). Se ve en «Canasta».
+3. **El frasco pequeño es el más caro por mL.** Listerine Coolmint Frescura Intensa de 180 mL cuesta entre $ 69,4
+   y $ 73,1 por mL según el comercio; el de 1.000 mL, entre $ 43,7 y $ 46,0. El de 1.000 mL es el más barato por mL
+   en Olímpica ($ 43,7) y Locatel ($ 45,0), pero en Éxito lo es el de 500 mL ($ 39,8). Se ve en «Precio por
+   unidad de contenido».
+4. **En un mes cambió casi la mitad de los precios.** Entre `E20261009T162803` y `E20261109T151124` se comparan
+   1.242 anuncios con precio en ambas fechas: 332 subieron y 242 bajaron (46 %), 30 anuncios son nuevos y 5
+   dejaron de observarse. En Locatel y Olímpica predominan las alzas (77 y 60 frente a 17 y 21 bajas); en Éxito
+   están repartidas (195 alzas y 204 bajas). Se ve en «Cambios de precio».
+5. **El catálogo más grande no es el más disponible.** Éxito publica 1.750 anuncios, pero el 62,5 % figura
+   agotado; en Locatel es el 7,0 % y en Olímpica ninguno. De los anuncios con precio, está en promoción el
+   58,2 % en Éxito, el 6,7 % en Locatel y el 4,0 % en Olímpica. Se ve en «Comercios» y en «Resumen».
 
 Límites: los precios son los del momento de la captura; la canasta no incluye envío, mínimos de compra ni
-condiciones de las promociones; 6 de las 84 presentaciones comparables no tienen precio unitario porque los
+condiciones de las promociones; 6 de las 82 presentaciones comparables no tienen precio unitario porque los
 comercios declaran contenidos distintos y no hay mayoría.
 
 ## 8. Despliegue
@@ -180,7 +198,7 @@ comercios declaran contenidos distintos y no hay mayoría.
 ```r
 # En la consola de R (no guardar en ningún archivo):
 # rsconnect::setAccountInfo(name = "...", token = "...", secret = "...")
-rsconnect::deployApp(appDir = ".", appName = "comparador-cuidado-bucal")
+rsconnect::deployApp(appDir = ".", appName = "Parcial_2")
 ```
 
 - Las plataformas gratuitas no conservan los cambios de la base al reiniciarse: una actualización hecha en la

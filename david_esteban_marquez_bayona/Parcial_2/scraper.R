@@ -13,7 +13,7 @@
 #      un manifest.json. Los datos SIEMPRE se procesan desde raw/: en línea y sin conexión el
 #      resultado es idéntico y cada observación se puede rastrear hasta su copia cruda.
 #
-# Uso desde la consola (carpeta taller_2/):
+# Uso desde la consola (carpeta del proyecto):
 #   Rscript scraper.R                  nueva ejecución en línea
 #   Rscript scraper.R --sin-conexion   reprocesa raw/ sin consultar los sitios
 #   Rscript scraper.R --robots         revisa y guarda robots.txt
@@ -630,8 +630,15 @@ revisar_robots <- function(comercios = NULL, raw_dir = RAW_DIR, modo = "en_linea
         else if (agente == "*" && grepl("^disallow\\s*:", l, ignore.case = TRUE)) prohibidas <- c(prohibidas, trimws(sub("^[^:]*:", "", l)))
       }
       prohibidas <- prohibidas[nzchar(prohibidas)]
+      # Cada regla es un prefijo de la ruta; `*` vale por cualquier texto y `$` marca el final
+      patrones <- vapply(prohibidas, function(regla) {
+        final <- endsWith(regla, "$")
+        partes <- strsplit(sub("\\$$", "", regla), "*", fixed = TRUE)[[1]]
+        partes <- gsub("([][{}()+?.\\\\^$|])", "\\\\\\1", partes)
+        paste0("^", paste(partes, collapse = ".*"), if (endsWith(sub("\\$$", "", regla), "*")) ".*" else "", if (final) "$" else "")
+      }, "")
       data.frame(comercio = COMERCIOS[[cid]][1], ruta = c(ARBOL, BUSQUEDA),
-                 permitido = !vapply(c(ARBOL, BUSQUEDA), function(p) any(startsWith(p, sub("\\*.*$", "", prohibidas))), TRUE),
+                 permitido = !vapply(c(ARBOL, BUSQUEDA), function(p) any(vapply(patrones, grepl, TRUE, x = p)), TRUE),
                  fecha_revision = substr(basename(copias[length(copias)]), 8, 17), error = NA_character_,
                  stringsAsFactors = FALSE, row.names = NULL)
     }, error = function(e) data.frame(comercio = COMERCIOS[[cid]][1], ruta = NA_character_, permitido = NA,

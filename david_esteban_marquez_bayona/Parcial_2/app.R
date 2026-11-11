@@ -2,7 +2,7 @@
 #
 # Interfaz (bslib) y servidor. Aquí no hay SQL ni scraping: las consultas están en db.R, la
 # extracción en scraper.R, las reglas en validacion.R y limpieza.R, y los gráficos en graficos.R.
-# Ejecutar desde la carpeta taller_2/:  shiny::runApp()
+# Ejecutar desde la carpeta del proyecto:  shiny::runApp()
 
 library(shiny)
 library(bslib)
