@@ -1,6 +1,6 @@
 # Taller 2 · Comparador de precios de cuidado bucal (aplicación Shiny)
 
-Minería de Datos (2016325) · Universidad Nacional de Colombia · **David Esteban Márquez Bayona**
+Minería de Datos · Universidad Nacional de Colombia · **David Esteban Márquez Bayona**
 
 - **Aplicación publicada:** https://9foq8d-david-esteban.shinyapps.io/Parcial_2/
 - **Categoría:** cuidado bucal. **Comercios:** Éxito, Olímpica y Locatel (los mismos del Taller 1).
