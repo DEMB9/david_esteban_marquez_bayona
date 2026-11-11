@@ -2,7 +2,7 @@
 
 Minería de Datos (2016325) · Universidad Nacional de Colombia · **David Esteban Márquez Bayona**
 
-- **Aplicación publicada:** `PENDIENTE — pegar aquí el enlace de shinyapps.io o Posit Connect Cloud`
+- **Aplicación publicada:** https://9foq8d-david-esteban.shinyapps.io/Parcial_2/
 - **Categoría:** cuidado bucal. **Comercios:** Éxito, Olímpica y Locatel (los mismos del Taller 1).
 - **Lenguaje:** R ≥ 4.2 para todo el proceso (scraping, acceso a datos, aplicación y pruebas).
 
