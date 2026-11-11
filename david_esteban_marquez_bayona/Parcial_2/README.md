@@ -198,6 +198,134 @@ rsconnect::deployApp(appDir = ".", appName = "comparador-cuidado-bucal")
   por tabla con la del Taller 1 y resultó idéntica; (2) tras la migración, las observaciones siguen siendo las
   mismas 19.067 del Taller 1; (3) las pruebas automáticas pasan; (4) la descarga en línea se probó contra un
   servidor local que imita la API de los comercios, porque el entorno del asistente no tenía acceso a los
-  sitios; (5) la aplicación se recorrió pestaña por pestaña, incluida una actualización sin conexión.
-- `PENDIENTE — describir la revisión propia: ejecución en línea real contra los tres comercios, revisión del
-  código, despliegue y comprobación de los hallazgos en la aplicación.`
+  sitios; (5) la aplicación se recorrió pestaña por pestaña, incluida una actualización sin conexión. (5) se tomaban diferentes fechas para evaluarlo
+- **Verificación del sitio** Se subió por medio de shinyapps.io y luego se volvió a revisar en la versión estable.
+
+## 10. Diccionario de funciones
+
+Funciones del proyecto agrupadas por archivo. Las que empiezan por punto (`.get`, `.where`…) son **internas**:
+las usan otras funciones del mismo archivo y no están pensadas para llamarse directamente. `con` es siempre una
+conexión DBI a `comparador_precios.sqlite` y `f` una lista de filtros creada con `filtros()`.
+
+### 10.1 `scraper.R` — extracción, copias crudas e inserción
+
+| Función | Argumentos | Devuelve | Qué hace |
+|---|---|---|---|
+| `ejecutar_recoleccion` | `comercios`, `modo`, `db_path`, `raw_dir`, `ejecucion_id`, `verbose`, `progreso`, `esquema`, `ruta_manual`, `actualizar` | data.frame (una fila por comercio) | **Punto de entrada.** Extrae cada comercio, valida, inserta en SQLite sin sobrescribir (una transacción por comercio) y actualiza la correspondencia de productos. Si un comercio falla, sigue con los demás. |
+| `reprocesar_sin_conexion` | `db_path`, `raw_dir`, `ejecuciones`, `verbose`, `progreso`, `...` | data.frame | Carga en la base las ejecuciones guardadas en `raw/` sin consultar los sitios. No duplica lo ya cargado. |
+| `extraer_exito`, `extraer_olimpica`, `extraer_locatel` | `ejecucion_id`, `modo`, `raw_dir`, `progreso` | lista `datos`, `secciones`, `meta` | Una función por comercio, con la misma firma y las mismas columnas de salida. |
+| `descargar` | `cid`, `ejecucion_id`, `raw_dir`, `progreso` | ruta de la carpeta | Consulta el árbol de categorías y las páginas de productos (VTEX) y guarda cada respuesta original en `raw/` con su `manifest.json`. |
+| `procesar_raw` | `carpeta` | lista `datos`, `secciones`, `meta` | Lee una carpeta de `raw/` y arma la tabla estándar de observaciones; marca la ejecución como completa, parcial o fallida. |
+| `parsear_producto` | `prod`, `man`, `pet`, `sec` | lista de registros | Convierte un producto de la respuesta VTEX en un registro por SKU (precio, precio de lista, promoción, disponibilidad, vendedor). |
+| `secciones` | `arbol` | lista de secciones | Busca en el árbol de categorías las secciones de cuidado bucal (excluye mascotas). |
+| `secciones_previas` | `cid`, `raw_dir` | lista de secciones | Respaldo: si el árbol de categorías no responde, reutiliza las secciones de la última ejecución completa guardada en `raw/`. |
+| `limpiar_precio` | `x` | número o `NA` | Convierte un precio en texto a número («$ 12.900» → 12900). Un precio ausente, cero o negativo queda `NA`, nunca 0. |
+| `ahora_iso` | — | texto | Fecha y hora de Colombia en ISO 8601 (`-05:00`). |
+| `conectar` | `db_path`, `esquema` | conexión | Abre la base de escritura y crea lo que falte de la estructura (tablas, columnas, vistas) sin borrar datos. |
+| `insertar` | `con`, `cid`, `lote`, `modo`, `n_rechazadas` | entero o `NA` | Inserta la ejecución, sus secciones, anuncios y observaciones. Devuelve `NA` si esa ejecución ya estaba cargada. |
+| `resumen_ejecucion` | `con`, `ejecucion_id`, `cid` | lista | Productos nuevos, cambios de precio y no observados frente a la ejecución anterior del comercio. |
+| `ejecuciones_en_raw` | `raw_dir` | data.frame | Ejecuciones guardadas en `raw/` (con `manifest.json`), por comercio y fecha. |
+| `revisar_robots` | `comercios`, `raw_dir`, `modo` | data.frame | Descarga y guarda `robots.txt` y verifica que las rutas usadas estén permitidas. |
+| `.get` | `url`, `params` | respuesta HTTP | Petición GET con reintentos y espera exponencial ante 429 / 5xx. |
+| `.registrar_rechazos` | `con`, `rechazadas` | entero | Guarda en `observaciones_rechazadas` las filas que no pasaron la validación. |
+| `.coinciden_con_base` | `con`, `ejecucion_id`, `cid`, `datos` | entero | Cuenta cuántas filas leídas de `raw/` coinciden (SKU, precio, disponibilidad) con lo guardado en la base. |
+| `.extraer` | `cid`, `ejecucion_id`, `modo`, `raw_dir`, `progreso` | lista | Lógica común de las tres funciones `extraer_*`: en línea descarga y procesa; sin conexión solo procesa. |
+| `.ejecutar_script` | `con`, `ruta` | — | Ejecuta un archivo `.sql` (esquema o vistas) sentencia por sentencia. |
+| `.tabla_vacia` | — | data.frame | Tabla estándar sin filas, para los comercios que fallan. |
+| `.leer_gz`, `.escribir_gz`, `.leer_json_gz` | `ruta` (y `bytes`) | bytes / JSON | Leen y escriben las copias crudas comprimidas. |
+| `.json_py` | `x` | texto | Serializa la ficha técnica igual que `json.dumps` de Python, para conservar el formato del Taller 1. |
+| `.vacio`, `.o`, `.txt` | `x` / `a`, `b` | lógico / valor | Utilidades: «está vacío», «a o, si está vacío, b» y conversión a texto con `NA`. |
+
+### 10.2 `limpieza.R` — normalización y correspondencia de productos (reglas R1–R9, C1–C2)
+
+| Función | Argumentos | Devuelve | Qué hace |
+|---|---|---|---|
+| `actualizar_correspondencias` | `con`, `ejecucion_ref`, `ruta_manual`, `min_comercios`, `fecha`, `correcciones` | lista | Re-estandariza todos los anuncios, aplica correcciones, asigna `producto_id` común entre comercios y marca los comparables. Corre en una transacción y es idempotente. |
+| `estandarizar` | `nombre`, `marca_sitio`, `categoria_sitio`, `ficha` | lista | Aplica R1–R7 a un anuncio: nombre estándar, marca, subcategoría, contenido, unidad, concentración y familia. |
+| `normalizar_texto` | `s` | texto | R1: minúsculas, sin tildes, coma decimal → punto, sin signos. |
+| `estandarizar_marca` | `nombre`, `marca_sitio` | texto o `NA` | R2: marca conocida en el nombre; si no, la marca publicada por el comercio. |
+| `clasificar` | `nombre`, `categoria_sitio` | lista `subcategoria`, `motivo` | R3 y R4: subcategoría por expresiones regulares y exclusión de lo que no es cuidado bucal. |
+| `extraer_contenido` | `nombre`, `ficha`, `subcategoria` | lista | R5 y R6: contenido unitario, número de unidades, contenido total, unidad y concentración. |
+| `extraer_unidades` | `n` | lista `n`, `regla` | Número de unidades del empaque («3 x 75 ml», «x 5 und», «lleve 3 pague 2»…). |
+| `normalizar_unidad` | `valor`, `unidad` | lista | Convierte a mL, g o m (1 L → 1000 mL). |
+| `familia_de` | `nombre`, `marca` | lista `clave`, `legible` | R7: nombre del producto sin tamaño, empaque ni marca. |
+| `nombre_para_analisis` | `nombre_producto`, `nombre_item` | texto | Elige el nombre del SKU o la combinación de producto e ítem. |
+| `texto_tamano` | `contenido_total`, `contenido_unitario`, `n_unidades`, `unidad`, `concentracion` | texto | Texto de la presentación («3 x 75 ml (1450 ppm)»). |
+| `gtin_valido` | `codigo` | texto o `NA` | R8: valida el dígito de control del EAN y lo devuelve en 14 dígitos. |
+| `leer_manuales` | `ruta` | data.frame | Lee `correspondencias_manuales.csv` (R8a). |
+| `marcar_comparables` | `con`, `ejecucion_ref`, `min_comercios` | lista | R9: marca como comparables las presentaciones con precio disponible en todos los comercios de la ejecución de referencia. |
+| `elegir_ejecucion_referencia` | `con`, `min_comercios` | texto | Ejecución más reciente con al menos tres comercios y ocho presentaciones comunes. |
+| `.aplicar_correcciones` | `con`, `A`, `fecha` | data.frame | C0, C1 y C2: reaplica correcciones registradas y homologa contenido y subcategoría por EAN (mayoría estricta). |
+| `.registrar_correccion` | `con`, `fecha`, `anuncio_id`, `campo`, `anterior`, `nuevo`, `motivo`, `regla` | — | Guarda una corrección automática en la tabla `correcciones`. |
+| `.actualizar_correspondencias` | (los de `actualizar_correspondencias`) | lista | Cuerpo de `actualizar_correspondencias`, sin la transacción. |
+| `.clave_nombre`, `.id_nombre` | campos estandarizados / `clave` | texto | R8c: clave normalizada y su identificador `N` + hash. |
+| `.comercios_ejecucion`, `.comunes` | `con`, `eid` | vector | Comercios no fallidos de una ejecución y presentaciones presentes en todos ellos. |
+| `.hay_tabla` | `con`, `tabla` | lógico | ¿Existe esa tabla o vista en la base? |
+| `re_buscar`, `re_hay`, `re_todos` | `patron`, `x` | coincidencia / lógico / matriz | Expresiones regulares PCRE (equivalentes a `re` de Python). |
+| `moda`, `fmt_g`, `titulo`, `es_nulo`, `%\|\|%` | `x` | valor | Utilidades: valor más frecuente, formato numérico corto, mayúscula inicial, nulo y valor por defecto. |
+
+### 10.3 `validacion.R` — validación y correcciones
+
+| Función | Argumentos | Devuelve | Qué hace |
+|---|---|---|---|
+| `validar_observaciones` | `datos`, `referencia` | lista `validas`, `rechazadas`, `faltan_referencia`, `agente` | Aplica las reglas V1–V7 con `pointblank`. Las filas que fallan se separan con el motivo; no se insertan. |
+| `comparables_de_referencia` | `con` | data.frame | Anuncios de los ocho productos comparables de referencia en cada comercio. |
+| `elegir_comparables_referencia` | `con`, `n` | entero | Elige una sola vez los ocho comparables de referencia (EAN válido, sin alertas, precio en los tres comercios en todas las ejecuciones completas). |
+| `registrar_correccion` | `con`, `anuncio_id`, `campo`, `valor_nuevo`, `motivo` | entero | Corrección manual de un campo estandarizado; queda registrada y se reaplica en cada actualización. |
+| `descartar_observacion` | `con`, `observacion_id`, `motivo` | entero | Marca una observación como descartada (no la borra) y lo registra. |
+
+### 10.4 `db.R` — consultas de la aplicación
+
+| Función | Argumentos | Devuelve | Qué hace |
+|---|---|---|---|
+| `abrir_conexion`, `cerrar_conexion` | `db_path` / `con` | conexión / — | Abre la conexión de solo lectura de la aplicación y la cierra al detenerla. |
+| `filtros` | `comercios`, `subcategorias`, `marcas`, `precio_min`, `precio_max`, `ejecucion`, `fecha_desde`, `fecha_hasta`, `solo_promociones`, `solo_comparables`, `texto` | lista | Crea la lista de filtros que reciben las demás funciones. |
+| `validar_busqueda` | `texto` | lista `ok`, `palabras`, `mensaje` | Valida la búsqueda: máximo 60 caracteres; letras, números, espacios y `. , % + -`. |
+| `listar_ejecuciones`, `detalle_ejecuciones`, `ultima_ejecucion` | `con` | data.frame | Ejecuciones con su estado, en resumen, por comercio y la más reciente. |
+| `opciones_filtros` | `con` | lista | Valores disponibles para los selectores (comercios, subcategorías, marcas, precios, fechas). |
+| `productos_filtrados` | `con`, `f`, `limite` | data.frame | Tabla de productos con los filtros aplicados. |
+| `indicadores` | `con`, `f` | data.frame | Productos, observaciones, % en promoción, % agotado y precio mediano. |
+| `conteo_por_comercio`, `perfil_comercios` | `con`, `f` | data.frame | Conteos por comercio; el perfil añade marcas y precio mediano (fichas de la pestaña «Comercios»). |
+| `mediana_por_subcategoria`, `distribucion_precios` | `con`, `f` | data.frame | Precio mediano por subcategoría; percentiles y cuartiles por comercio. |
+| `cambios_en_ejecucion` | `con`, `ejecucion` | data.frame | Cuántos precios subieron y bajaron en una ejecución. |
+| `lista_comparables` | `con`, `solo_verificados` | data.frame | Presentaciones comparables; las ocho de referencia primero. |
+| `evolucion_precio` | `con`, `producto_id`, `comercios` | data.frame | Precio de una presentación en cada comercio y ejecución. |
+| `precio_unitario_comparables`, `unidades_comparables` | `con`, `ejecucion`, `unidad`, … | data.frame | Precio por unidad de contenido (una sola unidad de medida a la vez) y unidades disponibles. |
+| `ahorro_por_producto` | `con`, `ejecucion`, `comercios`, `subcategorias` | data.frame | Diferencia entre el comercio más caro y el más barato por producto; maneja empates. |
+| `quien_es_mas_barato` | `con`, `ejecucion`, `comercios`, `subcategorias` | data.frame | Cuántos productos comparables son más baratos en cada comercio (datos del waffle). |
+| `composicion_catalogo` | `con`, `f`, `n` | data.frame | % de anuncios de cada comercio por subcategoría (columnas porcentuales). |
+| `marcas_por_comercio` | `con`, `f`, `n` | data.frame | Marcas con más anuncios en cada comercio (packed bubble). |
+| `jerarquia_catalogo` | `con`, `f`, `n_sub`, `n_marca` | data.frame | Comercio → subcategoría → marca con número de anuncios (sunburst). |
+| `comparar_ejecuciones` | `con`, `anterior`, `actual`, `comercios`, `umbral` | lista | Cambios de precio, productos nuevos y no observados entre dos ejecuciones. |
+| `calcular_canasta` | `con`, `items`, `ejecucion`, `comercios` | lista | Costo de la canasta por comercio (solo si tiene todos los productos), costo mínimo combinando comercios y ahorro. |
+| `listar_correcciones`, `listar_rechazadas`, `resumen_disponibilidad` | `con` (y `ejecucion`) | data.frame | Tablas de calidad de datos. |
+| `.where` | `con`, `f` | SQL | Arma la condición `WHERE` con valores escapados por `glue_sql`. |
+| `.q` | `con`, `sql`, `...` | data.frame | Consulta con parámetros `?`. |
+
+### 10.5 `graficos.R` — tema visual, formato y gráficos
+
+| Función | Argumentos | Devuelve | Qué hace |
+|---|---|---|---|
+| `tema_app` | — | tema `bslib` | Colores, tipografías y bordes de la interfaz. |
+| `grafico_evolucion` | `d` | highchart | Líneas: precio de un producto comparable por comercio y ejecución. |
+| `grafico_precio_unitario` | `d`, `unidad`, `maximo` | highchart | Puntos por comercio con el rango entre el más barato y el más caro (precio por unidad). |
+| `grafico_distribucion` | `d` | highchart | Cajas: distribución de precios por comercio (escala logarítmica). |
+| `grafico_ahorro` | `d`, `maximo` | highchart | Barras: ahorro por producto, coloreadas por el comercio más barato. |
+| `grafico_composicion` | `d` | highchart | Columnas porcentuales: composición del catálogo por subcategoría. |
+| `grafico_burbujas` | `d` | highchart | Packed bubble: marcas de cada comercio. |
+| `grafico_sunburst` | `d` | highchart | Sunburst: comercio → subcategoría → marca. |
+| `waffle_html` | `conteo` | HTML | Waffle de 100 cuadros con el reparto del comercio más barato. |
+| `ficha_comercio` | `cid`, `nombre`, `cifra`, `cifra_texto`, `filas` | HTML | Ficha con logo y cifras de un comercio. |
+| `color_comercio`, `simbolo_comercio`, `logo_html` | `comercio_id` (y `alto`, `grande`) | texto | Color, símbolo y logo de cada comercio, iguales en toda la app. |
+| `cop`, `pct`, `entero` | `x` (y `decimales`) | texto | Formato en pesos colombianos, porcentaje y entero con separador de miles. |
+| `fecha_hora`, `etiqueta_ejecucion` | `iso` / `ejecucion_id` | texto | Fecha y hora legibles («2026-10-09 14:40»). |
+| `.tema`, `.opciones_idioma`, `.marcas_log` | `hc` / — / `a`, `b` | — | Aplica el tema a los gráficos, configura separadores en español y calcula marcas legibles para ejes logarítmicos. |
+
+### 10.6 `app.R` y scripts auxiliares
+
+| Función / script | Argumentos | Qué hace |
+|---|---|---|
+| `tarjeta_indicador` (app.R) | `titulo`, `id`, `detalle_id`, `tema` | Crea una tarjeta de indicador del Resumen. |
+| `server` (app.R) | `input`, `output`, `session` | Servidor de Shiny: filtros, caché (`bindCache`), gráficos, tablas, canasta y actualización en segundo plano (`ExtendedTask`). Dentro define ayudas locales: `opciones_ejecucion`, `enlace`, `tabla_simple` y `dt_plana`. |
+| `configurar.R` | — | Instala las dependencias con las versiones de `renv.lock` y verifica que carguen. |
+| `migrar_taller1.R` | carpeta del Taller 1 (opcional) | Copia la base y `raw/` del Taller 1 y les agrega la estructura del Taller 2. |
