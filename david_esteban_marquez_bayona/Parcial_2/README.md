@@ -71,8 +71,651 @@ empates, canasta completa y canasta con un producto faltante, y filtros con text
 (`ejecuciones.carpeta_raw`). La columna «Coinciden con la base» del resumen del modo sin conexión cuenta
 cuántas filas leídas de `raw/` coinciden en SKU, precio y disponibilidad con lo guardado.
 
-**Historial.** `PENDIENTE — la base del Taller 1 tiene 8 ejecuciones completas, todas del 2026-10-09. Falta
-agregar al menos una ejecución en otra fecha con «Actualizar precios» (o `Rscript scraper.R`) y describirla aquí.`
+**Historial.** C:\USERS\DAVID\ONEDRIVE\ESCRITORIO\MINERIA\DAVID_ESTEBAN_MARQUEZ_BAYONA\DAVID_ESTEBAN_MARQUEZ_BAYONA\PARCIAL_2\RAW
+├───exito
+│   ├───2026-10-09
+│   │   ├───E20261009T104100
+│   │   │       0000_arbol.json.gz
+│   │   │       0001_productos_s34185114.json.gz
+│   │   │       0002_productos_s34185114.json.gz
+│   │   │       0003_productos_s34185114.json.gz
+│   │   │       0004_productos_s34185114.json.gz
+│   │   │       0005_productos_s34185114.json.gz
+│   │   │       0006_productos_s34185114.json.gz
+│   │   │       0007_productos_s34185114.json.gz
+│   │   │       0008_productos_s34185114.json.gz
+│   │   │       0009_productos_s34185114.json.gz
+│   │   │       0010_productos_s34185114.json.gz
+│   │   │       0011_productos_s34185114.json.gz
+│   │   │       0012_productos_s34185114.json.gz
+│   │   │       0013_productos_s34185114.json.gz
+│   │   │       0014_productos_s34185114.json.gz
+│   │   │       0015_productos_s34185114.json.gz
+│   │   │       0016_productos_s34185114.json.gz
+│   │   │       0017_productos_s34185114.json.gz
+│   │   │       0018_productos_s34185114.json.gz
+│   │   │       0019_productos_s34185114.json.gz
+│   │   │       0020_productos_s34185114.json.gz
+│   │   │       0021_productos_s34185114.json.gz
+│   │   │       0022_productos_s34185114.json.gz
+│   │   │       0023_productos_s34185114.json.gz
+│   │   │       0024_productos_s34185114.json.gz
+│   │   │       0025_productos_s34185114.json.gz
+│   │   │       0026_productos_s34185114.json.gz
+│   │   │       0027_productos_s34185114.json.gz
+│   │   │       0028_productos_s34185114.json.gz
+│   │   │       0029_productos_s34185114.json.gz
+│   │   │       0030_productos_s34185114.json.gz
+│   │   │       0031_productos_s34185114.json.gz
+│   │   │       0032_productos_s34185114.json.gz
+│   │   │       0033_productos_s34185114.json.gz
+│   │   │       0034_productos_s34185114.json.gz
+│   │   │       0035_productos_s34185114.json.gz
+│   │   │       manifest.json
+│   │   │
+│   │   ├───E20261009T104416
+│   │   │       0000_arbol.json.gz
+│   │   │       0001_productos_s34185114.json.gz
+│   │   │       0002_productos_s34185114.json.gz
+│   │   │       0003_productos_s34185114.json.gz
+│   │   │       0004_productos_s34185114.json.gz
+│   │   │       0005_productos_s34185114.json.gz
+│   │   │       0006_productos_s34185114.json.gz
+│   │   │       0007_productos_s34185114.json.gz
+│   │   │       0008_productos_s34185114.json.gz
+│   │   │       0009_productos_s34185114.json.gz
+│   │   │       0010_productos_s34185114.json.gz
+│   │   │       0011_productos_s34185114.json.gz
+│   │   │       0012_productos_s34185114.json.gz
+│   │   │       0013_productos_s34185114.json.gz
+│   │   │       0014_productos_s34185114.json.gz
+│   │   │       0015_productos_s34185114.json.gz
+│   │   │       0016_productos_s34185114.json.gz
+│   │   │       0017_productos_s34185114.json.gz
+│   │   │       0018_productos_s34185114.json.gz
+│   │   │       0019_productos_s34185114.json.gz
+│   │   │       0020_productos_s34185114.json.gz
+│   │   │       0021_productos_s34185114.json.gz
+│   │   │       0022_productos_s34185114.json.gz
+│   │   │       0023_productos_s34185114.json.gz
+│   │   │       0024_productos_s34185114.json.gz
+│   │   │       0025_productos_s34185114.json.gz
+│   │   │       0026_productos_s34185114.json.gz
+│   │   │       0027_productos_s34185114.json.gz
+│   │   │       0028_productos_s34185114.json.gz
+│   │   │       0029_productos_s34185114.json.gz
+│   │   │       0030_productos_s34185114.json.gz
+│   │   │       0031_productos_s34185114.json.gz
+│   │   │       0032_productos_s34185114.json.gz
+│   │   │       0033_productos_s34185114.json.gz
+│   │   │       0034_productos_s34185114.json.gz
+│   │   │       0035_productos_s34185114.json.gz
+│   │   │       manifest.json
+│   │   │
+│   │   ├───E20261009T110227
+│   │   │       0000_arbol.json.gz
+│   │   │       0001_productos_s34185114.json.gz
+│   │   │       0002_productos_s34185114.json.gz
+│   │   │       0003_productos_s34185114.json.gz
+│   │   │       0004_productos_s34185114.json.gz
+│   │   │       0005_productos_s34185114.json.gz
+│   │   │       0006_productos_s34185114.json.gz
+│   │   │       0007_productos_s34185114.json.gz
+│   │   │       0008_productos_s34185114.json.gz
+│   │   │       0009_productos_s34185114.json.gz
+│   │   │       0010_productos_s34185114.json.gz
+│   │   │       0011_productos_s34185114.json.gz
+│   │   │       0012_productos_s34185114.json.gz
+│   │   │       0013_productos_s34185114.json.gz
+│   │   │       0014_productos_s34185114.json.gz
+│   │   │       0015_productos_s34185114.json.gz
+│   │   │       0016_productos_s34185114.json.gz
+│   │   │       0017_productos_s34185114.json.gz
+│   │   │       0018_productos_s34185114.json.gz
+│   │   │       0019_productos_s34185114.json.gz
+│   │   │       0020_productos_s34185114.json.gz
+│   │   │       0021_productos_s34185114.json.gz
+│   │   │       0022_productos_s34185114.json.gz
+│   │   │       0023_productos_s34185114.json.gz
+│   │   │       0024_productos_s34185114.json.gz
+│   │   │       0025_productos_s34185114.json.gz
+│   │   │       0026_productos_s34185114.json.gz
+│   │   │       0027_productos_s34185114.json.gz
+│   │   │       0028_productos_s34185114.json.gz
+│   │   │       0029_productos_s34185114.json.gz
+│   │   │       0030_productos_s34185114.json.gz
+│   │   │       0031_productos_s34185114.json.gz
+│   │   │       0032_productos_s34185114.json.gz
+│   │   │       0033_productos_s34185114.json.gz
+│   │   │       0034_productos_s34185114.json.gz
+│   │   │       0035_productos_s34185114.json.gz
+│   │   │       manifest.json
+│   │   │
+│   │   ├───E20261009T112120
+│   │   │       0000_arbol.json.gz
+│   │   │       0001_productos_s34185114.json.gz
+│   │   │       0002_productos_s34185114.json.gz
+│   │   │       0003_productos_s34185114.json.gz
+│   │   │       0004_productos_s34185114.json.gz
+│   │   │       0005_productos_s34185114.json.gz
+│   │   │       0006_productos_s34185114.json.gz
+│   │   │       0007_productos_s34185114.json.gz
+│   │   │       0008_productos_s34185114.json.gz
+│   │   │       0009_productos_s34185114.json.gz
+│   │   │       0010_productos_s34185114.json.gz
+│   │   │       0011_productos_s34185114.json.gz
+│   │   │       0012_productos_s34185114.json.gz
+│   │   │       0013_productos_s34185114.json.gz
+│   │   │       0014_productos_s34185114.json.gz
+│   │   │       0015_productos_s34185114.json.gz
+│   │   │       0016_productos_s34185114.json.gz
+│   │   │       0017_productos_s34185114.json.gz
+│   │   │       0018_productos_s34185114.json.gz
+│   │   │       0019_productos_s34185114.json.gz
+│   │   │       0020_productos_s34185114.json.gz
+│   │   │       0021_productos_s34185114.json.gz
+│   │   │       0022_productos_s34185114.json.gz
+│   │   │       0023_productos_s34185114.json.gz
+│   │   │       0024_productos_s34185114.json.gz
+│   │   │       0025_productos_s34185114.json.gz
+│   │   │       0026_productos_s34185114.json.gz
+│   │   │       0027_productos_s34185114.json.gz
+│   │   │       0028_productos_s34185114.json.gz
+│   │   │       0029_productos_s34185114.json.gz
+│   │   │       0030_productos_s34185114.json.gz
+│   │   │       0031_productos_s34185114.json.gz
+│   │   │       0032_productos_s34185114.json.gz
+│   │   │       0033_productos_s34185114.json.gz
+│   │   │       0034_productos_s34185114.json.gz
+│   │   │       0035_productos_s34185114.json.gz
+│   │   │       manifest.json
+│   │   │
+│   │   ├───E20261009T140657
+│   │   │       0000_arbol.json.gz
+│   │   │       0001_productos_s34185114.json.gz
+│   │   │       0002_productos_s34185114.json.gz
+│   │   │       0003_productos_s34185114.json.gz
+│   │   │       0004_productos_s34185114.json.gz
+│   │   │       0005_productos_s34185114.json.gz
+│   │   │       0006_productos_s34185114.json.gz
+│   │   │       0007_productos_s34185114.json.gz
+│   │   │       0008_productos_s34185114.json.gz
+│   │   │       0009_productos_s34185114.json.gz
+│   │   │       0010_productos_s34185114.json.gz
+│   │   │       0011_productos_s34185114.json.gz
+│   │   │       0012_productos_s34185114.json.gz
+│   │   │       0013_productos_s34185114.json.gz
+│   │   │       0014_productos_s34185114.json.gz
+│   │   │       0015_productos_s34185114.json.gz
+│   │   │       0016_productos_s34185114.json.gz
+│   │   │       0017_productos_s34185114.json.gz
+│   │   │       0018_productos_s34185114.json.gz
+│   │   │       0019_productos_s34185114.json.gz
+│   │   │       0020_productos_s34185114.json.gz
+│   │   │       0021_productos_s34185114.json.gz
+│   │   │       0022_productos_s34185114.json.gz
+│   │   │       0023_productos_s34185114.json.gz
+│   │   │       0024_productos_s34185114.json.gz
+│   │   │       0025_productos_s34185114.json.gz
+│   │   │       0026_productos_s34185114.json.gz
+│   │   │       0027_productos_s34185114.json.gz
+│   │   │       0028_productos_s34185114.json.gz
+│   │   │       0029_productos_s34185114.json.gz
+│   │   │       0030_productos_s34185114.json.gz
+│   │   │       0031_productos_s34185114.json.gz
+│   │   │       0032_productos_s34185114.json.gz
+│   │   │       0033_productos_s34185114.json.gz
+│   │   │       0034_productos_s34185114.json.gz
+│   │   │       0035_productos_s34185114.json.gz
+│   │   │       manifest.json
+│   │   │
+│   │   ├───E20261009T142137
+│   │   │       0000_arbol.json.gz
+│   │   │       0001_productos_s34185114.json.gz
+│   │   │       0002_productos_s34185114.json.gz
+│   │   │       0003_productos_s34185114.json.gz
+│   │   │       0004_productos_s34185114.json.gz
+│   │   │       0005_productos_s34185114.json.gz
+│   │   │       0006_productos_s34185114.json.gz
+│   │   │       0007_productos_s34185114.json.gz
+│   │   │       0008_productos_s34185114.json.gz
+│   │   │       0009_productos_s34185114.json.gz
+│   │   │       0010_productos_s34185114.json.gz
+│   │   │       0011_productos_s34185114.json.gz
+│   │   │       0012_productos_s34185114.json.gz
+│   │   │       0013_productos_s34185114.json.gz
+│   │   │       0014_productos_s34185114.json.gz
+│   │   │       0015_productos_s34185114.json.gz
+│   │   │       0016_productos_s34185114.json.gz
+│   │   │       0017_productos_s34185114.json.gz
+│   │   │       0018_productos_s34185114.json.gz
+│   │   │       0019_productos_s34185114.json.gz
+│   │   │       0020_productos_s34185114.json.gz
+│   │   │       0021_productos_s34185114.json.gz
+│   │   │       0022_productos_s34185114.json.gz
+│   │   │       0023_productos_s34185114.json.gz
+│   │   │       0024_productos_s34185114.json.gz
+│   │   │       0025_productos_s34185114.json.gz
+│   │   │       0026_productos_s34185114.json.gz
+│   │   │       0027_productos_s34185114.json.gz
+│   │   │       0028_productos_s34185114.json.gz
+│   │   │       0029_productos_s34185114.json.gz
+│   │   │       0030_productos_s34185114.json.gz
+│   │   │       0031_productos_s34185114.json.gz
+│   │   │       0032_productos_s34185114.json.gz
+│   │   │       0033_productos_s34185114.json.gz
+│   │   │       0034_productos_s34185114.json.gz
+│   │   │       0035_productos_s34185114.json.gz
+│   │   │       manifest.json
+│   │   │
+│   │   ├───E20261009T143244
+│   │   │       0000_arbol.json.gz
+│   │   │       0001_productos_s34185114.json.gz
+│   │   │       0002_productos_s34185114.json.gz
+│   │   │       0003_productos_s34185114.json.gz
+│   │   │       0004_productos_s34185114.json.gz
+│   │   │       0005_productos_s34185114.json.gz
+│   │   │       0006_productos_s34185114.json.gz
+│   │   │       0007_productos_s34185114.json.gz
+│   │   │       0008_productos_s34185114.json.gz
+│   │   │       0009_productos_s34185114.json.gz
+│   │   │       0010_productos_s34185114.json.gz
+│   │   │       0011_productos_s34185114.json.gz
+│   │   │       0012_productos_s34185114.json.gz
+│   │   │       0013_productos_s34185114.json.gz
+│   │   │       0014_productos_s34185114.json.gz
+│   │   │       0015_productos_s34185114.json.gz
+│   │   │       0016_productos_s34185114.json.gz
+│   │   │       0017_productos_s34185114.json.gz
+│   │   │       0018_productos_s34185114.json.gz
+│   │   │       0019_productos_s34185114.json.gz
+│   │   │       0020_productos_s34185114.json.gz
+│   │   │       0021_productos_s34185114.json.gz
+│   │   │       0022_productos_s34185114.json.gz
+│   │   │       0023_productos_s34185114.json.gz
+│   │   │       0024_productos_s34185114.json.gz
+│   │   │       0025_productos_s34185114.json.gz
+│   │   │       0026_productos_s34185114.json.gz
+│   │   │       0027_productos_s34185114.json.gz
+│   │   │       0028_productos_s34185114.json.gz
+│   │   │       0029_productos_s34185114.json.gz
+│   │   │       0030_productos_s34185114.json.gz
+│   │   │       0031_productos_s34185114.json.gz
+│   │   │       0032_productos_s34185114.json.gz
+│   │   │       0033_productos_s34185114.json.gz
+│   │   │       0034_productos_s34185114.json.gz
+│   │   │       0035_productos_s34185114.json.gz
+│   │   │       manifest.json
+│   │   │
+│   │   ├───E20261009T144022
+│   │   │       0000_arbol.json.gz
+│   │   │       0001_productos_s34185114.json.gz
+│   │   │       0002_productos_s34185114.json.gz
+│   │   │       0003_productos_s34185114.json.gz
+│   │   │       0004_productos_s34185114.json.gz
+│   │   │       0005_productos_s34185114.json.gz
+│   │   │       0006_productos_s34185114.json.gz
+│   │   │       0007_productos_s34185114.json.gz
+│   │   │       0008_productos_s34185114.json.gz
+│   │   │       0009_productos_s34185114.json.gz
+│   │   │       0010_productos_s34185114.json.gz
+│   │   │       0011_productos_s34185114.json.gz
+│   │   │       0012_productos_s34185114.json.gz
+│   │   │       0013_productos_s34185114.json.gz
+│   │   │       0014_productos_s34185114.json.gz
+│   │   │       0015_productos_s34185114.json.gz
+│   │   │       0016_productos_s34185114.json.gz
+│   │   │       0017_productos_s34185114.json.gz
+│   │   │       0018_productos_s34185114.json.gz
+│   │   │       0019_productos_s34185114.json.gz
+│   │   │       0020_productos_s34185114.json.gz
+│   │   │       0021_productos_s34185114.json.gz
+│   │   │       0022_productos_s34185114.json.gz
+│   │   │       0023_productos_s34185114.json.gz
+│   │   │       0024_productos_s34185114.json.gz
+│   │   │       0025_productos_s34185114.json.gz
+│   │   │       0026_productos_s34185114.json.gz
+│   │   │       0027_productos_s34185114.json.gz
+│   │   │       0028_productos_s34185114.json.gz
+│   │   │       0029_productos_s34185114.json.gz
+│   │   │       0030_productos_s34185114.json.gz
+│   │   │       0031_productos_s34185114.json.gz
+│   │   │       0032_productos_s34185114.json.gz
+│   │   │       0033_productos_s34185114.json.gz
+│   │   │       0034_productos_s34185114.json.gz
+│   │   │       0035_productos_s34185114.json.gz
+│   │   │       manifest.json
+│   │   │
+│   │   └───E20261009T162803
+│   │           0000_arbol.json.gz
+│   │           0001_productos_s34185114.json.gz
+│   │           0002_productos_s34185114.json.gz
+│   │           0003_productos_s34185114.json.gz
+│   │           0004_productos_s34185114.json.gz
+│   │           0005_productos_s34185114.json.gz
+│   │           0006_productos_s34185114.json.gz
+│   │           0007_productos_s34185114.json.gz
+│   │           0008_productos_s34185114.json.gz
+│   │           0009_productos_s34185114.json.gz
+│   │           0010_productos_s34185114.json.gz
+│   │           0011_productos_s34185114.json.gz
+│   │           0012_productos_s34185114.json.gz
+│   │           0013_productos_s34185114.json.gz
+│   │           0014_productos_s34185114.json.gz
+│   │           0015_productos_s34185114.json.gz
+│   │           0016_productos_s34185114.json.gz
+│   │           0017_productos_s34185114.json.gz
+│   │           0018_productos_s34185114.json.gz
+│   │           0019_productos_s34185114.json.gz
+│   │           0020_productos_s34185114.json.gz
+│   │           0021_productos_s34185114.json.gz
+│   │           0022_productos_s34185114.json.gz
+│   │           0023_productos_s34185114.json.gz
+│   │           0024_productos_s34185114.json.gz
+│   │           0025_productos_s34185114.json.gz
+│   │           0026_productos_s34185114.json.gz
+│   │           0027_productos_s34185114.json.gz
+│   │           0028_productos_s34185114.json.gz
+│   │           0029_productos_s34185114.json.gz
+│   │           0030_productos_s34185114.json.gz
+│   │           0031_productos_s34185114.json.gz
+│   │           0032_productos_s34185114.json.gz
+│   │           0033_productos_s34185114.json.gz
+│   │           0034_productos_s34185114.json.gz
+│   │           0035_productos_s34185114.json.gz
+│   │           manifest.json
+│   │
+│   ├───2026-11-09
+│   │   └───E20261109T151124
+│   │           0000_arbol.json.gz
+│   │           0001_productos_s34185114.json.gz
+│   │           0002_productos_s34185114.json.gz
+│   │           0003_productos_s34185114.json.gz
+│   │           0004_productos_s34185114.json.gz
+│   │           0005_productos_s34185114.json.gz
+│   │           0006_productos_s34185114.json.gz
+│   │           0007_productos_s34185114.json.gz
+│   │           0008_productos_s34185114.json.gz
+│   │           0009_productos_s34185114.json.gz
+│   │           0010_productos_s34185114.json.gz
+│   │           0011_productos_s34185114.json.gz
+│   │           0012_productos_s34185114.json.gz
+│   │           0013_productos_s34185114.json.gz
+│   │           0014_productos_s34185114.json.gz
+│   │           0015_productos_s34185114.json.gz
+│   │           0016_productos_s34185114.json.gz
+│   │           0017_productos_s34185114.json.gz
+│   │           0018_productos_s34185114.json.gz
+│   │           0019_productos_s34185114.json.gz
+│   │           0020_productos_s34185114.json.gz
+│   │           0021_productos_s34185114.json.gz
+│   │           0022_productos_s34185114.json.gz
+│   │           0023_productos_s34185114.json.gz
+│   │           0024_productos_s34185114.json.gz
+│   │           0025_productos_s34185114.json.gz
+│   │           0026_productos_s34185114.json.gz
+│   │           0027_productos_s34185114.json.gz
+│   │           0028_productos_s34185114.json.gz
+│   │           0029_productos_s34185114.json.gz
+│   │           0030_productos_s34185114.json.gz
+│   │           0031_productos_s34185114.json.gz
+│   │           0032_productos_s34185114.json.gz
+│   │           0033_productos_s34185114.json.gz
+│   │           0034_productos_s34185114.json.gz
+│   │           0035_productos_s34185114.json.gz
+│   │           manifest.json
+│   │
+│   └───robots
+│           robots_2026-10-09.txt.gz
+│           robots_2026-11-09.txt.gz
+│           robots_2026-11-11.txt.gz
+│
+├───locatel
+│   ├───2026-10-09
+│   │   ├───E20261009T104100
+│   │   │       0000_arbol.json.gz
+│   │   │       0001_productos_s10.json.gz
+│   │   │       0002_productos_s10.json.gz
+│   │   │       0003_productos_s10.json.gz
+│   │   │       0004_productos_s10.json.gz
+│   │   │       0005_productos_s10.json.gz
+│   │   │       0006_productos_s10.json.gz
+│   │   │       0007_productos_s10.json.gz
+│   │   │       0008_productos_s10.json.gz
+│   │   │       manifest.json
+│   │   │
+│   │   ├───E20261009T104416
+│   │   │       0000_arbol.json.gz
+│   │   │       0001_productos_s10.json.gz
+│   │   │       0002_productos_s10.json.gz
+│   │   │       0003_productos_s10.json.gz
+│   │   │       0004_productos_s10.json.gz
+│   │   │       0005_productos_s10.json.gz
+│   │   │       0006_productos_s10.json.gz
+│   │   │       0007_productos_s10.json.gz
+│   │   │       0008_productos_s10.json.gz
+│   │   │       manifest.json
+│   │   │
+│   │   ├───E20261009T110227
+│   │   │       0000_arbol.json.gz
+│   │   │       0001_productos_s10.json.gz
+│   │   │       0002_productos_s10.json.gz
+│   │   │       0003_productos_s10.json.gz
+│   │   │       0004_productos_s10.json.gz
+│   │   │       0005_productos_s10.json.gz
+│   │   │       0006_productos_s10.json.gz
+│   │   │       0007_productos_s10.json.gz
+│   │   │       0008_productos_s10.json.gz
+│   │   │       manifest.json
+│   │   │
+│   │   ├───E20261009T112120
+│   │   │       0000_arbol.json.gz
+│   │   │       0001_productos_s10.json.gz
+│   │   │       0002_productos_s10.json.gz
+│   │   │       0003_productos_s10.json.gz
+│   │   │       0004_productos_s10.json.gz
+│   │   │       0005_productos_s10.json.gz
+│   │   │       0006_productos_s10.json.gz
+│   │   │       0007_productos_s10.json.gz
+│   │   │       0008_productos_s10.json.gz
+│   │   │       manifest.json
+│   │   │
+│   │   ├───E20261009T140657
+│   │   │       0000_arbol.json.gz
+│   │   │       0001_productos_s10.json.gz
+│   │   │       0002_productos_s10.json.gz
+│   │   │       0003_productos_s10.json.gz
+│   │   │       0004_productos_s10.json.gz
+│   │   │       0005_productos_s10.json.gz
+│   │   │       0006_productos_s10.json.gz
+│   │   │       0007_productos_s10.json.gz
+│   │   │       0008_productos_s10.json.gz
+│   │   │       manifest.json
+│   │   │
+│   │   ├───E20261009T142137
+│   │   │       0000_arbol.json.gz
+│   │   │       0001_productos_s10.json.gz
+│   │   │       0002_productos_s10.json.gz
+│   │   │       0003_productos_s10.json.gz
+│   │   │       0004_productos_s10.json.gz
+│   │   │       0005_productos_s10.json.gz
+│   │   │       0006_productos_s10.json.gz
+│   │   │       0007_productos_s10.json.gz
+│   │   │       0008_productos_s10.json.gz
+│   │   │       manifest.json
+│   │   │
+│   │   ├───E20261009T143244
+│   │   │       0000_arbol.json.gz
+│   │   │       0001_productos_s10.json.gz
+│   │   │       0002_productos_s10.json.gz
+│   │   │       0003_productos_s10.json.gz
+│   │   │       0004_productos_s10.json.gz
+│   │   │       0005_productos_s10.json.gz
+│   │   │       0006_productos_s10.json.gz
+│   │   │       0007_productos_s10.json.gz
+│   │   │       0008_productos_s10.json.gz
+│   │   │       manifest.json
+│   │   │
+│   │   ├───E20261009T144022
+│   │   │       0000_arbol.json.gz
+│   │   │       0001_productos_s10.json.gz
+│   │   │       0002_productos_s10.json.gz
+│   │   │       0003_productos_s10.json.gz
+│   │   │       0004_productos_s10.json.gz
+│   │   │       0005_productos_s10.json.gz
+│   │   │       0006_productos_s10.json.gz
+│   │   │       0007_productos_s10.json.gz
+│   │   │       0008_productos_s10.json.gz
+│   │   │       manifest.json
+│   │   │
+│   │   └───E20261009T162803
+│   │           0000_arbol.json.gz
+│   │           0001_productos_s10.json.gz
+│   │           0002_productos_s10.json.gz
+│   │           0003_productos_s10.json.gz
+│   │           0004_productos_s10.json.gz
+│   │           0005_productos_s10.json.gz
+│   │           0006_productos_s10.json.gz
+│   │           0007_productos_s10.json.gz
+│   │           0008_productos_s10.json.gz
+│   │           manifest.json
+│   │
+│   ├───2026-11-09
+│   │   └───E20261109T151124
+│   │           0000_arbol.json.gz
+│   │           0001_productos_s10.json.gz
+│   │           0002_productos_s10.json.gz
+│   │           0003_productos_s10.json.gz
+│   │           0004_productos_s10.json.gz
+│   │           0005_productos_s10.json.gz
+│   │           0006_productos_s10.json.gz
+│   │           0007_productos_s10.json.gz
+│   │           0008_productos_s10.json.gz
+│   │           manifest.json
+│   │
+│   └───robots
+│           robots_2026-10-09.txt.gz
+│           robots_2026-11-09.txt.gz
+│           robots_2026-11-11.txt.gz
+│
+└───olimpica
+    ├───2026-10-09
+    │   ├───E20261009T104100
+    │   │       0000_arbol.json.gz
+    │   │       0001_productos_s900110300.json.gz
+    │   │       0002_productos_s900110300.json.gz
+    │   │       0003_productos_s900110300.json.gz
+    │   │       0004_productos_s900110300.json.gz
+    │   │       0005_productos_s900110300.json.gz
+    │   │       0006_productos_s900110300.json.gz
+    │   │       0007_productos_s901011100.json.gz
+    │   │       manifest.json
+    │   │
+    │   ├───E20261009T104416
+    │   │       0000_arbol.json.gz
+    │   │       0001_productos_s900110300.json.gz
+    │   │       0002_productos_s900110300.json.gz
+    │   │       0003_productos_s900110300.json.gz
+    │   │       0004_productos_s900110300.json.gz
+    │   │       0005_productos_s900110300.json.gz
+    │   │       0006_productos_s900110300.json.gz
+    │   │       0007_productos_s901011100.json.gz
+    │   │       manifest.json
+    │   │
+    │   ├───E20261009T110227
+    │   │       0000_arbol.json.gz
+    │   │       0001_productos_s900110300.json.gz
+    │   │       0002_productos_s900110300.json.gz
+    │   │       0003_productos_s900110300.json.gz
+    │   │       0004_productos_s900110300.json.gz
+    │   │       0005_productos_s900110300.json.gz
+    │   │       0006_productos_s900110300.json.gz
+    │   │       0007_productos_s901011100.json.gz
+    │   │       manifest.json
+    │   │
+    │   ├───E20261009T112120
+    │   │       0000_arbol.json.gz
+    │   │       0001_productos_s900110300.json.gz
+    │   │       0002_productos_s900110300.json.gz
+    │   │       0003_productos_s900110300.json.gz
+    │   │       0004_productos_s900110300.json.gz
+    │   │       0005_productos_s900110300.json.gz
+    │   │       0006_productos_s900110300.json.gz
+    │   │       0007_productos_s901011100.json.gz
+    │   │       manifest.json
+    │   │
+    │   ├───E20261009T140657
+    │   │       0000_arbol.json.gz
+    │   │       0001_productos_s900110300.json.gz
+    │   │       0002_productos_s900110300.json.gz
+    │   │       0003_productos_s900110300.json.gz
+    │   │       0004_productos_s900110300.json.gz
+    │   │       0005_productos_s900110300.json.gz
+    │   │       0006_productos_s900110300.json.gz
+    │   │       0007_productos_s901011100.json.gz
+    │   │       manifest.json
+    │   │
+    │   ├───E20261009T142137
+    │   │       0000_arbol.json.gz
+    │   │       0001_productos_s900110300.json.gz
+    │   │       0002_productos_s900110300.json.gz
+    │   │       0003_productos_s900110300.json.gz
+    │   │       0004_productos_s900110300.json.gz
+    │   │       0005_productos_s900110300.json.gz
+    │   │       0006_productos_s900110300.json.gz
+    │   │       0007_productos_s901011100.json.gz
+    │   │       manifest.json
+    │   │
+    │   ├───E20261009T143244
+    │   │       0000_arbol.json.gz
+    │   │       0001_productos_s900110300.json.gz
+    │   │       0002_productos_s900110300.json.gz
+    │   │       0003_productos_s900110300.json.gz
+    │   │       0004_productos_s900110300.json.gz
+    │   │       0005_productos_s900110300.json.gz
+    │   │       0006_productos_s900110300.json.gz
+    │   │       0007_productos_s901011100.json.gz
+    │   │       manifest.json
+    │   │
+    │   ├───E20261009T144022
+    │   │       0000_arbol.json.gz
+    │   │       0001_productos_s900110300.json.gz
+    │   │       0002_productos_s900110300.json.gz
+    │   │       0003_productos_s900110300.json.gz
+    │   │       0004_productos_s900110300.json.gz
+    │   │       0005_productos_s900110300.json.gz
+    │   │       0006_productos_s900110300.json.gz
+    │   │       0007_productos_s901011100.json.gz
+    │   │       manifest.json
+    │   │
+    │   └───E20261009T162803
+    │           0000_arbol.json.gz
+    │           0001_productos_s900110300.json.gz
+    │           0002_productos_s900110300.json.gz
+    │           0003_productos_s900110300.json.gz
+    │           0004_productos_s900110300.json.gz
+    │           0005_productos_s900110300.json.gz
+    │           0006_productos_s900110300.json.gz
+    │           0007_productos_s901011100.json.gz
+    │           manifest.json
+    │
+    ├───2026-11-09
+    │   └───E20261109T151124
+    │           0000_arbol.json.gz
+    │           0001_productos_s900110300.json.gz
+    │           0002_productos_s900110300.json.gz
+    │           0003_productos_s900110300.json.gz
+    │           0004_productos_s900110300.json.gz
+    │           0005_productos_s900110300.json.gz
+    │           0006_productos_s900110300.json.gz
+    │           0007_productos_s901011100.json.gz
+    │           manifest.json
+    │
+    └───robots
+            .gitignore
+            robots_2026-10-09.txt.gz
+            robots_2026-11-09.txt.gz
+            robots_2026-11-11.txt.gz
 
 **Correcciones a la base del Taller 1** (tabla `correcciones`; no se borró ni se modificó ninguna observación):
 
@@ -82,8 +725,6 @@ agregar al menos una ejecución en otra fecha con «Actualizar precios» (o `Rsc
 | C2 | Subcategoría homologada por EAN con la misma regla (por ejemplo, nombres abreviados de Olímpica que quedaban en «Otros cuidado bucal»). | 10 anuncios |
 
 Con esto, 78 de las 84 presentaciones comparables tienen contenido verificado y, por tanto, precio unitario comparable; antes de las correcciones eran menos de la mitad.
-`PENDIENTE — agregar las correcciones que pida la retroalimentación del Taller 1 con registrar_correccion()
-o descartar_observacion() (validacion.R) y describirlas aquí.`
 
 **Validación** (`validacion.R`): precio numérico (V1) y mayor que cero (V2); producto disponible con precio
 (V3); comercio, URL, SKU y fecha presentes (V4); fecha en ISO 8601 (V5); sin duplicados en la ejecución (V6);
@@ -154,10 +795,6 @@ sola conexión de lectura (`PRAGMA query_only`) y la cierra con `onStop()`; el s
   (`TallerMineriaDatosUNAL/2.0`), máximo 80 peticiones por comercio y copia de `robots.txt` en cada ejecución.
 
 ## 7. Hallazgos para el consumidor
-
-Basados en las 8 ejecuciones del **9 de octubre de 2026** (10:41 a 14:42); las cifras son de la ejecución
-`E20261009T144022` y se pueden verificar en la aplicación eligiéndola en «Ejecución».
-`PENDIENTE — actualizar con la ejecución nueva de este taller.`
 
 1. **Éxito es el más barato en la mayoría de productos, pero no en todos.** De las 84 presentaciones
    comparables, Éxito tiene el menor precio en 53, Olímpica en 22 y Locatel en 13 (los empates cuentan para
